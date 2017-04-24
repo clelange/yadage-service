@@ -9,6 +9,7 @@ RUN npm install -g bower;  echo '{ "allow_root": true }' > /root/.bowerrc
 
 ADD . /code
 WORKDIR /code
+RUN pip install Flask Flask-AutoIndex redis gevent gevent-websocket
 RUN echo X
 RUN pip install -e .
 RUN cd yadageservice; bower install

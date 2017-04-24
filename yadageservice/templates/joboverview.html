@@ -15,6 +15,7 @@
             <tr>
                 <th>Job ID</th>
                 <th>Status</th>
+                <th>Results</th>
             </tr>
         </thead>
         <tbody>
@@ -22,6 +23,13 @@
               <tr>
                 <td><a href="/monitor/{{row['jobguid']}}">{{row['jobguid']}}</a></td>
                 <td style="width: 25%;">{{row['details']['status']}}</td>
+                <td>
+                {% if row['details']['status'] == 'SUCCESS' %}
+                    <a href="/results/{{row['jobguid']}}">Results</a>
+                {% else %}
+                    Results
+                {% endif %}
+                </td>
               </tr>
             {% endfor %}
         </tbody>

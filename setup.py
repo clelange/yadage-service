@@ -9,6 +9,7 @@ setup(
   packages=find_packages(),
   install_requires = [
     'Flask',
+    'Flask-AutoIndex',
     'redis',
     'msgpack-python',
     'python-socketio',

@@ -4,9 +4,13 @@ monkey.patch_all()
 import socketio
 import logging
 import time
+import os
 import msgpack
 import json
-from flask import Flask, render_template, request, jsonify
+import jobdb
+from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask.ext.autoindex import AutoIndex
+
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
@@ -25,7 +29,6 @@ app.config['SECRET_KEY'] = 'secret!'
 
 def background_thread():
     """Example of how to send server generated events to clients."""
-
     log.info('starting background thread')
     for m in wflowapi.log_msg_stream():
         log.info('got message from wflow api %s', m)
@@ -55,7 +58,20 @@ def sandbox_submit():
     spec = submission.submit_spec(**data)
 
     processing_id = wflowapi.workflow_submit(spec)
+    jobdb.register_job(processing_id,spec['shipout_spec']['location'])
     return jsonify({'jobguid': processing_id})
+
+@app.route('/results/<jobguid>/<path:path>')
+def results(jobguid):
+    basepath = jobdb.resultdir(jobguid)
+    basepath = basepath.split(os.environ['YADAGE_RESULTBASE'],1)[-1].strip('/')
+    return redirect(url_for('autoindex', path = basepath))
+
+idx = AutoIndex(app, os.environ['YADAGE_RESULTBASE'], add_url_rules=False)
+@app.route('/resultfiles')
+@app.route('/resultfiles/<path:path>')
+def autoindex(path='.'):
+    return idx.render_autoindex(path)
 
 @app.route('/')
 def home():

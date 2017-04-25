@@ -61,11 +61,12 @@ def sandbox_submit():
     jobdb.register_job(processing_id,spec['shipout_spec']['location'])
     return jsonify({'jobguid': processing_id})
 
+@app.route('/results/<jobguid>')
 @app.route('/results/<jobguid>/<path:path>')
-def results(jobguid):
+def results(jobguid, path = "."):
     basepath = jobdb.resultdir(jobguid)
     basepath = basepath.split(os.environ['YADAGE_RESULTBASE'],1)[-1].strip('/')
-    return redirect(url_for('autoindex', path = basepath))
+    return redirect(url_for('autoindex', path = os.path.join(basepath,path)))
 
 idx = AutoIndex(app, os.environ['YADAGE_RESULTBASE'], add_url_rules=False)
 @app.route('/resultfiles')

@@ -104,7 +104,7 @@ oauth_app = oauth.remote_app('oauth_app',
                              access_token_method='POST'
                              )
 
-@app.route(os.environ.config['YADAGE_OAUTH_REDIRECT_ROUTE'])
+@app.route(os.environ['YADAGE_OAUTH_REDIRECT_ROUTE'])
 @oauth_app.authorized_handler
 def oauth_redirect(resp):
     next_url = request.args.get('next') or url_for('home')
@@ -117,7 +117,7 @@ def oauth_redirect(resp):
 
 @app.route('/login')
 def login():
-    redirect_uri = os.environ['YADAGE_BASEURL'] + url_for('oauth_redirect')
+    redirect_uri = os.environ['YADAGE_OAUTH_BASEURL'] + url_for('oauth_redirect')
     return oauth_app.authorize(callback=redirect_uri)
 
 
@@ -221,7 +221,7 @@ def disconnect(sid):
 
 if __name__ == '__main__':
     sio.start_background_task(background_thread)
-    pywsgi.WSGIServer(('0.0.0.0', 5000), app,
+    pywsgi.WSGIServer(('0.0.0.0', int(os.environ.get('YADAGE_PORT',5000))), app,
                       handler_class = WebSocketHandler,
                       keyfile = os.environ.get('YADAGE_SSL_KEY','server.key'),
                       certfile = os.environ.get('YADAGE_SSL_CERT','server.crt')

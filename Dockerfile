@@ -1,5 +1,5 @@
 FROM fedora
-RUN dnf install -y gcc gcc-c++ graphviz-devel ImageMagick python-devel libffi-devel openssl openssl-devel unzip nano autoconf automake libtool git python; yum clean all 
+RUN dnf install -y gcc gcc-c++ graphviz-devel ImageMagick python-devel libffi-devel openssl openssl-devel unzip nano autoconf automake libtool git python redhat-rpm-config; yum clean all 
 RUN curl https://bootstrap.pypa.io/get-pip.py | python -
 RUN pip install Flask redis msgpack-python python-socketio gevent gevent-websocket requests
 

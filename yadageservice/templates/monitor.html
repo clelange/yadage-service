@@ -102,7 +102,7 @@ $(document).ready(function(){
     initialize_graph();
 
     namespace = '/test';
-    var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+    var socket = io.connect('//' + document.domain + ':' + location.port + namespace);
     socket_global = socket;
 
     socket.on('join_ack', function(msg){

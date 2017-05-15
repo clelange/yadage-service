@@ -36,13 +36,13 @@ oauth = OAuth()
 oauth_app = oauth.remote_app('oauth_app',
                              base_url=None,
                              request_token_url=None,
-                             access_token_url=os.environ['YADAGE_OAUTH_TOKENURL'],
+                             access_token_url=os.environ['CERN_OAUTH_TOKENURL'],
                              authorize_url=os.environ[
-                                 'YADAGE_OAUTH_AUTHORIZEURL'],
+                                 'CERN_OAUTH_AUTHORIZEURL'],
                              consumer_key=os.environ[
-                                 'YADAGE_OAUTH_APPID'],
+                                 'CERN_OAUTH_APPID'],
                              consumer_secret=os.environ[
-                                 'YADAGE_OAUTH_SECRET'],
+                                 'CERN_OAUTH_SECRET'],
                              request_token_params={
                                  'response_type': 'code', 'scope': 'bio'},
                              access_token_params={
@@ -60,7 +60,7 @@ def oauth_redirect(resp):
     return redirect(next_url)
 
 def login():
-    redirect_uri = os.environ['YADAGE_OAUTH_BASEURL'] + url_for('oauth_redirect')
+    redirect_uri = os.environ['CERN_OAUTH_BASEURL'] + url_for('oauth_redirect')
     return oauth_app.authorize(callback=redirect_uri)
 
 def logout():
@@ -69,10 +69,12 @@ def logout():
 
 def init_app(app):
     global oauth_redirect
+    global login
+    global logout
     oauth_redirect = oauth_app.authorized_handler(oauth_redirect)
-    app.route(os.environ['YADAGE_OAUTH_REDIRECT_ROUTE'])(oauth_redirect)
-    app.route('/login')(login)
-    app.route('/logout')(logout)
+    oauth_redirect = app.route(os.environ['CERN_OAUTH_REDIRECT_ROUTE'])(oauth_redirect)
+    login  = app.route('/login')(login)
+    logout = app.route('/logout')(logout)
 
 
 

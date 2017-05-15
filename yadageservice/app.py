@@ -8,9 +8,8 @@ import os
 import msgpack
 import json
 import jobdb
-import requests
 
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask.ext.autoindex import AutoIndex
 
 from gevent import pywsgi
@@ -56,76 +55,10 @@ def background_thread():
 ############################################
 ############################################
 
-def user_data(access_token):
-    r = requests.get(
-        'https://oauthresource.web.cern.ch/api/Me',
-        headers={'Authorization': 'Bearer {}'.format(access_token)}
-    )
-    return r.json()
-
-def extract_user_info(userdata):
-    userjson = {'experiment': 'unaffiliated'}
-
-    egroup_to_expt = {
-        'cms-members': 'CMS',
-        'alice-member': 'ALICE',
-        'atlas-active-members-all': 'ATLAS',
-        'lhcb-general': 'LHCb'
-    }
-
-    for x in userdata:
-        if x['Type'] == 'http://schemas.xmlsoap.org/claims/Firstname':
-            userjson['firstname'] = x['Value']
-        if x['Type'] == 'http://schemas.xmlsoap.org/claims/Lastname"':
-            userjson['lastname'] = x['Value']
-        if x['Type'] == 'http://schemas.xmlsoap.org/claims/CommonName':
-            userjson['username'] = x['Value']
-        if x['Type'] == 'http://schemas.xmlsoap.org/claims/Group':
-            if x['Value'] in egroup_to_expt:
-                userjson['experiment'] = egroup_to_expt[x['Value']]
-    return userjson
-
-from flask_oauth import OAuth
-oauth = OAuth()
-oauth_app = oauth.remote_app('oauth_app',
-                             base_url=None,
-                             request_token_url=None,
-                             access_token_url=os.environ['YADAGE_OAUTH_TOKENURL'],
-                             authorize_url=os.environ[
-                                 'YADAGE_OAUTH_AUTHORIZEURL'],
-                             consumer_key=os.environ[
-                                 'YADAGE_OAUTH_APPID'],
-                             consumer_secret=os.environ[
-                                 'YADAGE_OAUTH_SECRET'],
-                             request_token_params={
-                                 'response_type': 'code', 'scope': 'bio'},
-                             access_token_params={
-                                 'grant_type': 'authorization_code'},
-                             access_token_method='POST'
-                             )
-
-@app.route(os.environ['YADAGE_OAUTH_REDIRECT_ROUTE'])
-@oauth_app.authorized_handler
-def oauth_redirect(resp):
-    next_url = request.args.get('next') or url_for('home')
-    if resp is None:
-        return redirect(next_url)
-
-    data = user_data(resp['access_token'])
-    session['user'] = extract_user_info(data)
-    return redirect(next_url)
-
-@app.route('/login')
-def login():
-    redirect_uri = os.environ['YADAGE_OAUTH_BASEURL'] + url_for('oauth_redirect')
-    return oauth_app.authorize(callback=redirect_uri)
+import cern_oauth
 
 
-@app.route('/logout')
-def logout():
-    session.pop('user')
-    return redirect('/')
-
+cern_oauth.init_app(app)
 
 ############################################
 ############################################

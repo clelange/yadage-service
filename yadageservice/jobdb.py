@@ -2,9 +2,9 @@ import redis
 import os
 def wflow_job_db():
    return redis.StrictRedis(
-                host = os.environ['YADAGE_JOBDB_REDIS_HOST'],
-                db   = os.environ['YADAGE_JOBDB_REDIS_DB'],
-                port = os.environ['YADAGE_JOBDB_REDIS_PORT'],
+                host = os.environ.get('YADAGE_JOBDB_REDIS_HOST','localhost'),
+                db   = os.environ.get('YADAGE_JOBDB_REDIS_DB',0),
+                port = os.environ.get('YADAGE_JOBDB_REDIS_PORT',6379),
 )
 
 db = wflow_job_db()

@@ -10,6 +10,8 @@ setup(
   install_requires = [
     'Flask',
     'Flask-AutoIndex',
+    'Flask-OAuth',
+    'requests[security]',
     'redis',
     'msgpack-python',
     'python-socketio',

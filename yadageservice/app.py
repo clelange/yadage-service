@@ -108,6 +108,10 @@ def submit():
 def monitor(identifier):
     return render_template('monitor.html', jobguid=identifier)
 
+@app.route('/jobstatus/<identifier>')
+def jobstatus(identifier):
+    return jsonify(wflowapi.workflow_status([identifier])[0])
+
 @app.route('/joboverview')
 def joboverview():
     all_jobs = wflowapi.all_jobs()

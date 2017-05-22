@@ -10,6 +10,7 @@ setup(
   install_requires = [
     'Flask',
     'Flask-AutoIndex',
+    'Flask-Login',
     'oauth2',
     'Flask-OAuth',
     'requests[security]',

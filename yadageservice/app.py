@@ -50,21 +50,17 @@ def background_thread():
                         finally:
                             pass
 
-
-
 ############################################
 ############################################
 
 import cern_oauth
-
-
 cern_oauth.init_app(app)
 
 ############################################
 ############################################
 
-
 @app.route('/workflow_submit', methods=['POST'])
+@cern_oauth.login_required
 def sandbox_submit():
     data = request.json
     log.info('workflow submission requested with data %s', data)
@@ -78,6 +74,7 @@ def sandbox_submit():
 
 @app.route('/results/<jobguid>')
 @app.route('/results/<jobguid>/<path:path>')
+@cern_oauth.login_required
 def results(jobguid, path = "."):
     basepath = jobdb.resultdir(jobguid)
     basepath = basepath.split(os.environ['YADAGE_RESULTBASE'],1)[-1].strip('/')
@@ -86,14 +83,17 @@ def results(jobguid, path = "."):
 idx = AutoIndex(app, os.environ['YADAGE_RESULTBASE'], add_url_rules=False)
 @app.route('/resultfiles')
 @app.route('/resultfiles/<path:path>')
+@cern_oauth.login_required
 def autoindex(path='.'):
     return idx.render_autoindex(path)
+
 
 @app.route('/')
 def home():
     return render_template('home.html')
 
 @app.route('/submit')
+@cern_oauth.login_required
 def submit():
     presets = {}
     presets['toplevel'] = request.args.get('toplevel', None)
@@ -105,14 +105,17 @@ def submit():
     return render_template('submit.html', presets = presets)
 
 @app.route('/monitor/<identifier>')
+@cern_oauth.login_required
 def monitor(identifier):
     return render_template('monitor.html', jobguid=identifier)
 
 @app.route('/jobstatus/<identifier>')
+@cern_oauth.login_required
 def jobstatus(identifier):
     return jsonify(wflowapi.workflow_status([identifier])[0])
 
 @app.route('/joboverview')
+@cern_oauth.login_required
 def joboverview():
     all_jobs = wflowapi.all_jobs()
     job_info = [{'jobguid':jid, 'details':{'status':stat}} for stat,jid in zip(wflowapi.workflow_status(all_jobs),all_jobs)]

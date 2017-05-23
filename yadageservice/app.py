@@ -141,13 +141,9 @@ def enter(sid, data):
             latest_state = old_msg_data
             continue
         else:
-            sio.emit('room_msg', old_msg_data, room=data['room'], namespace='/test')
+            sio.emit('room_msg', old_msg_data, room=sid, namespace='/test')
     if latest_state:
-        sio.emit('room_msg', latest_state, room=data['room'], namespace='/test')
-
-
-    for msg in stored_messages:
-        sio.emit('join_ack', {'note':'just for you', 'msg': msg}, room = sid, namespace='/test')
+        sio.emit('room_msg', latest_state, room=sid, namespace='/test')
 
 @sio.on('roomit', namespace='/test')
 def roomit(sid, data):

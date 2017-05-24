@@ -137,7 +137,7 @@ def enter(sid, data):
     stored_messages = wflowapi.get_stored_messages(data['room'])
     for msg in stored_messages:
         old_msg_data = json.loads(msg)
-        if old_msg_data['type'] == 'yadage_stage':
+        if old_msg_data['type'] == 'yadage_state':
             latest_state = old_msg_data
             continue
         else:

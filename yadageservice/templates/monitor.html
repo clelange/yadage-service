@@ -75,9 +75,15 @@ function initialize_graph(){
         return item.id == nodeid
       }
     })
-    nodeproxy = data[0]['proxy']
-    if (nodeproxy.hasOwnProperty('proxydetails')){
-      console.log(nodeproxy.proxydetails['task_id'])
+    var node = data[0]
+    $('#nodebox').show()
+    $('#nodebox h4').html(node.label)
+    $('#nodebox div').html('State: '+node.state)
+    if(node.hasOwnProperty('proxy')){
+      nodeproxy = node['proxy']
+      if (nodeproxy.hasOwnProperty('proxydetails')){
+        $('#nodebox a').attr('href','/subjob_monitor/'+nodeproxy.proxydetails['task_id'])
+      }
     }
   })
 }
@@ -94,7 +100,7 @@ function update_graph(node_data, edge_data){
 
 
   var now_nodes = _.map(node_data ,function(x){
-    return {id: x.id, label: x.name, color: state_color[x.state], shape: 'box', proxy: x.proxy}
+    return {id: x.id, label: x.name, color: state_color[x.state], shape: 'box', proxy: x.proxy, state: x.state}
   })
   nodes.update(now_nodes);
 
@@ -153,18 +159,19 @@ function escapeHTML(s) {
 
 <div class="row">
     <div class="col-md-14">
-        <div>
+        <div class="col-md-10">
             <h3>Workflow Visualization</h3>
             <center>
               <div id="mynetwork"></div>
               <div>Last seen: <span id="timestamp"></span></div>
             </center>
         </div>
-        <div>
-            <h3>Log</h3>
-            <p>Messages from the request processor will appear below. </p>
-        	<div class="logwindow"></div>
+        <div class="col-md-2" id="nodebox" style="display: none">
+          <h4>Node: n/a</h4>
+          <div>Status: n/a</div>
+          <a href="#">Logs</a>
         </div>
+
     </div>
 </div>
 {% endblock %}

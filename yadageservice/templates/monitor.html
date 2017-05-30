@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+fhasOw{% extends "base.html" %}
 
 {% block prebody %}
 <script type="text/javascript" src="{{ url_for('static',filename='bower_components/lodash/dist/lodash.js')}}"></script>
@@ -171,7 +171,13 @@ function escapeHTML(s) {
           <div>Status: n/a</div>
           <a href="#">Logs</a>
         </div>
-
+    </div>
+    <div class="col-md-14">
+        <div>
+            <h3>Log</h3>
+            <p>Messages from the request processor will appear below. </p>
+          <div class="logwindow"></div>
+        </div>
     </div>
 </div>
 {% endblock %}

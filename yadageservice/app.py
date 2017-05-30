@@ -36,9 +36,8 @@ def background_thread():
         time.sleep(0.01)
         if m['type'] == 'message':
             sio.emit('join_ack', {'data': 'got a message from wflowapi','msg':m} , room='testroom', namespace='/test')
-            data,extras = json.loads(m['data'])
-            # data = msgpack.unpackb(m['data'])[0]
-            # extras = msgpack.unpackb(m['data'])[1]
+            data = msgpack.unpackb(m['data'])[0]
+            extras = msgpack.unpackb(m['data'])[1]
             if(data['nsp'] == '/monitor'):
                 if(extras['rooms']):
                     for room in extras['rooms']:
@@ -106,7 +105,7 @@ def submit():
     return render_template('submit.html', presets = presets)
 
 @app.route('/monitor/<identifier>')
-# @cern_oauth.login_required
+@cern_oauth.login_required
 def monitor(identifier):
     return render_template('monitor.html', jobguid=identifier)
 
@@ -139,17 +138,17 @@ def enter(sid, data):
     sio.enter_room(sid, data['room'], namespace='/test')
 
 
-    # latest_state = None
-    # stored_messages = wflowapi.get_stored_messages(data['room'])
-    # for msg in stored_messages:
-    #     old_msg_data = json.loads(msg)
-    #     if old_msg_data['type'] == 'yadage_state':
-    #         latest_state = old_msg_data
-    #         continue
-    #     else:
-    #         sio.emit('room_msg', old_msg_data, room=sid, namespace='/test')
-    # if latest_state:
-    #     sio.emit('room_msg', latest_state, room=sid, namespace='/test')
+    latest_state = None
+    stored_messages = wflowapi.get_stored_messages(data['room'])
+    for msg in stored_messages:
+        old_msg_data = json.loads(msg)
+        if old_msg_data['type'] == 'yadage_state':
+            latest_state = old_msg_data
+            continue
+        else:
+            sio.emit('room_msg', old_msg_data, room=sid, namespace='/test')
+    if latest_state:
+        sio.emit('room_msg', latest_state, room=sid, namespace='/test')
 
 @sio.on('roomit', namespace='/test')
 def roomit(sid, data):
@@ -163,8 +162,8 @@ def disconnect(sid):
 
 if __name__ == '__main__':
     sio.start_background_task(background_thread)
-    pywsgi.WSGIServer(('0.0.0.0', 7000), app,
+    pywsgi.WSGIServer(('0.0.0.0', int(os.environ.get('YADAGE_PORT',5000))), app,
                       handler_class = WebSocketHandler,
-                      # keyfile = os.environ.get('YADAGE_SSL_KEY','server.key'),
-                      # certfile = os.environ.get('YADAGE_SSL_CERT','server.crt')
+                      keyfile = os.environ.get('YADAGE_SSL_KEY','server.key'),
+                      certfile = os.environ.get('YADAGE_SSL_CERT','server.crt')
                       ).serve_forever()

@@ -39,7 +39,7 @@ def get_stored_messages(workflow_id):
 def subjob_log(subjob_id):
     logdata = requests.get(WFLOW_SERVER+'/subjob_logs',
                         headers = {'content-type': 'application/json'},
-                        data = {'subjob_id': subjob_id, 'topic': 'run'}
+                        data = json.dumps({'subjob_id': subjob_id, 'topic': 'run'})
     ).json()
     return [x['msg'] for x in logdata]
 

@@ -109,6 +109,11 @@ def submit():
 def monitor(identifier):
     return render_template('monitor.html', jobguid=identifier)
 
+@app.route('/subjob_monitor/<identifier>')
+@cern_oauth.login_required
+def subjob_monitor(identifier):
+    return ''.join(wflowapi.subjob_log(identifier))
+
 @app.route('/jobstatus/<identifier>')
 @cern_oauth.login_required
 def jobstatus(identifier):

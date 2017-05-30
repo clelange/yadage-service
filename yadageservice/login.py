@@ -31,7 +31,3 @@ def load_user_from_request(request):
         if api_key == os.environ['CERN_ATLAS_TOKEN']:
 	        return User('atlasapi','ATLAS','Robot','ATLAS')
 
-
-
-# testuser = User('lheinric','Lukas','Heinrich','ATLAS')
-# assert testuser.get_id() == load_user(testuser.get_id()).get_id()

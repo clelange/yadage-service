@@ -247,7 +247,7 @@ a:hover {
    background-color:transparent;
    color:#eee;
    display:inline-block;
-   white-space: nowrap;
+   white-space: pre;
    overflow:hidden;
    text-overflow: ellipsis;
    width: calc(100% - 160px);;

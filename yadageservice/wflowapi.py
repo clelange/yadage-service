@@ -47,7 +47,8 @@ def all_jobs():
     return requests.get(WFLOW_SERVER+'/jobs').json()
 
 def logpubsub():
-    server_data = requests.get(WFLOW_SERVER+'/pubsub_server').json()
+    # server_data = requests.get(WFLOW_SERVER+'/pubsub_server').json()
+    server_data = {'host':'localhost','port': 6379, 'db': 0, 'channel': 'dummyredis'}
     red = redis.StrictRedis(host = server_data['host'],
                               db = server_data['db'],
                             port = server_data['port'],)

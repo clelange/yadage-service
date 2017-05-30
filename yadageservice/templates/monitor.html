@@ -67,6 +67,19 @@ function initialize_graph(){
   // initialize your network!
   console.log('initialize...')
   var network = new vis.Network(container, data, options);
+
+  network.on('selectNode',function(params){
+    var nodeid = params['nodes'][0];
+    data = nodes.get({
+      filter: function(item){
+        return item.id == nodeid
+      }
+    })
+    nodeproxy = data[0]['proxy']
+    if (nodeproxy.hasOwnProperty('proxydetails')){
+      console.log(nodeproxy.proxydetails['task_id'])
+    }
+  })
 }
 
 function update_graph(node_data, edge_data){
@@ -81,7 +94,7 @@ function update_graph(node_data, edge_data){
 
 
   var now_nodes = _.map(node_data ,function(x){
-    return {id: x.id, label: x.name, color: state_color[x.state], shape: 'box'}
+    return {id: x.id, label: x.name, color: state_color[x.state], shape: 'box', proxy: x.proxy}
   })
   nodes.update(now_nodes);
 

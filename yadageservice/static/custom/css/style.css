@@ -241,6 +241,11 @@ a:hover {
     color:#f77;
     width:160px;
 }
+
+.message:hover {
+   white-space: pre-wrap;
+}
+
 .message{
    vertical-align:top;
    border:0;

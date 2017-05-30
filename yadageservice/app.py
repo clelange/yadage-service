@@ -112,7 +112,7 @@ def monitor(identifier):
 @app.route('/subjob_monitor/<identifier>')
 @cern_oauth.login_required
 def subjob_monitor(identifier):
-    return ''.join(wflowapi.subjob_log(identifier))
+    return '\n'.join(wflowapi.subjob_log(identifier))
 
 @app.route('/jobstatus/<identifier>')
 @cern_oauth.login_required

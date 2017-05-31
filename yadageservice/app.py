@@ -130,13 +130,13 @@ def joboverview():
 
 @sio.on('join', namespace='/subjobmon')
 def enter_sub(sid,data):
-    sio.enter_room(sid, data['room'], namespace='/subjobmon')
-    sio.emit('join_ack',{'data':'joined subjobmon room {}'.format(data['room'])}, room = data['room'], namespace = '/subjobmon')
-
     # for this session, emit historical data
-    for x in wflowapi.subjob_log(identifier)
+    for x in wflowapi.subjob_log(data['room']):
         sio.emit('log_message',{'msg': x}, room = sid, namespace = '/subjobmon')
 
+    #subscribe to any future updates
+    sio.enter_room(sid, data['room'], namespace='/subjobmon')
+    sio.emit('join_ack',{'data':'joined subjobmon room {}'.format(data['room'])}, room = data['room'], namespace = '/subjobmon')
 
 ## /test namespace
 @sio.on('connect', namespace='/test')

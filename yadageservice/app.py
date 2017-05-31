@@ -130,8 +130,10 @@ def joboverview():
 
 @sio.on('join', namespace='/subjobmon')
 def enter_sub(sid,data):
+    #
+    historical_data = wflowapi.subjob_log(data['room'])
     # for this session, emit historical data
-    for x in wflowapi.subjob_log(data['room']):
+    for x in historical_data[-3000:]:
         sio.emit('log_message',{'msg': x}, room = sid, namespace = '/subjobmon')
 
     #subscribe to any future updates

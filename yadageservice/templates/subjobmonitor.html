@@ -18,11 +18,22 @@ function escapeHTML(s) {
 
 $(document).ready(function(){
 
-    var msgs = {{ logmsgs|tojson|safe }}
-    $.each(msgs,function(index,value){
-      $('.logwindow').append('<div class="line"><span><code class="message">'+escapeHTML(value)+'</code></span></div>')
 
+    namespace = '/subjobmon';
+    var socket = io.connect('//' + document.domain + ':' + location.port + namespace);
+    socket_global = socket;
+
+    socket.on('join_ack', function(msg){
+      console.log(msg)
     })
+
+
+    socket.on('log_message', function(data){
+      $('.logwindow').append('<div class="line"><span><code class="message">'+escapeHTML(data['msg'])+'</code></span></div>')
+    })
+
+    socket.emit('join', {room: '{{subjobid}}' });
+
 });
 
 </script>
@@ -32,8 +43,8 @@ $(document).ready(function(){
 <div class="row">
     <div class="col-md-14">
         <div>
-            <h3>Log</h3>
-            <p>Messages from the request processor will appear below. </p>
+            <h3>Log {{subjobid}}</h3>
+            <p>Messages from the workflow subjob will appear below. </p>
           <div class="logwindow"></div>
         </div>
     </div>

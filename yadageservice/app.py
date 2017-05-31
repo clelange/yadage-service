@@ -112,7 +112,7 @@ def monitor(identifier):
 @app.route('/subjob_monitor/<identifier>')
 @cern_oauth.login_required
 def subjob_monitor(identifier):
-    return render_template('subjobmonitor.html', logmsgs=wflowapi.subjob_log(identifier))
+    return render_template('subjobmonitor.html', subjobid = identifier)
 
 @app.route('/jobstatus/<identifier>')
 @cern_oauth.login_required
@@ -126,6 +126,19 @@ def joboverview():
     job_info = [{'jobguid':jid, 'details':{'status':stat}} for stat,jid in zip(wflowapi.workflow_status(all_jobs),all_jobs)]
     return render_template('joboverview.html', job_info = job_info)
 
+## /subjobmon namespace
+
+@sio.on('join', namespace='/subjobmon')
+def enter_sub(sid,data):
+    sio.enter_room(sid, data['room'], namespace='/subjobmon')
+    sio.emit('join_ack',{'data':'joined subjobmon room {}'.format(data['room'])}, room = data['room'], namespace = '/subjobmon')
+
+    # for this session, emit historical data
+    for x in wflowapi.subjob_log(identifier)
+        sio.emit('log_message',{'msg': x}, room = sid, namespace = '/subjobmon')
+
+
+## /test namespace
 @sio.on('connect', namespace='/test')
 def connect(sid, environ):
     print('Client connected')

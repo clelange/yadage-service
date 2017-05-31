@@ -59,13 +59,15 @@ def oauth_redirect(resp):
 
     data = user_data(resp['access_token'])
     data = extract_user_info(data)
-    login_user(login_module.User(
-        data['username'],
-        data['firstname'],
-        data['lastname'],
-        data['experiment'],
-    ))
-    return redirect(next_url)
+    if 'experiment' in data and data['experiment'] == 'ATLAS':
+        login_user(login_module.User(
+            data['username'],
+            data['firstname'],
+            data['lastname'],
+            data['experiment'],
+        ))
+        return redirect(next_url)
+    return redirect(url_for('home'))
 
 def login():
     redirect_uri = os.environ['CERN_OAUTH_BASEURL'] + url_for('oauth_redirect')

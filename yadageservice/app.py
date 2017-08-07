@@ -32,17 +32,20 @@ def background_thread():
     """Example of how to send server generated events to clients."""
     log.info('starting background thread')
     for m in wflowapi.log_msg_stream():
-        log.info('got message from wflow api %s', m)
+        # log.info('got message from wflow api %s', m)
         time.sleep(0.01)
         if m['type'] == 'message':
-            wflow_msg = json.loads(m['data'])
-            try:
-                sio.emit('room_msg', wflow_msg, room=wflow_msg['wflowguid'], namespace='/test')
-            except:
-                log.exception('something went wrong in message handling')
-                pass
-            finally:
-                pass
+            msg = json.loads(m['data'])
+            if msg['msg_type'] in ['wflow_log','wflow_state']:
+                try:
+                    sio.emit('room_msg', msg, room=msg['wflowguid'], namespace='/wflow')
+                except:
+                    log.exception('something went wrong in message handling')
+                    pass
+                finally:
+                    pass
+            if msg['msg_type'] == 'simple_log':
+                sio.emit('log_message', msg, room = msg['jobguid'], namespace = '/subjobmon')
 
 ############################################
 ############################################
@@ -124,45 +127,43 @@ def joboverview():
 
 @sio.on('join', namespace='/subjobmon')
 def enter_sub(sid,data):
-    #
     historical_data = wflowapi.subjob_messages(data['room'], topic = 'run')
     # for this session, emit historical data
-    for x in historical_data[-3000:]:
-        sio.emit('log_message',{'msg': x}, room = sid, namespace = '/subjobmon')
+    for msg in historical_data[-3000:]:
+        sio.emit('log_message',msg, room = sid, namespace = '/subjobmon')
 
     #subscribe to any future updates
     sio.enter_room(sid, data['room'], namespace='/subjobmon')
     sio.emit('join_ack',{'data':'joined subjobmon room {}'.format(data['room'])}, room = data['room'], namespace = '/subjobmon')
 
-## /test namespace
-@sio.on('connect', namespace='/test')
+@sio.on('connect', namespace='/wflow')
 def connect(sid, environ):
-    print('Client connected')
+    print('Client connected to /wflow')
 
 
-@sio.on('join', namespace='/test')
+@sio.on('join', namespace='/wflow')
 def enter(sid, data):
     print('data', data)
 
     states = wflowapi.get_workflow_messages(data['room'],topic = 'state')
     try:
-        sio.emit('room_msg', states[-1], room=sid, namespace='/test')
+        sio.emit('room_msg', states[-1], room=sid, namespace='/wflow')
     except IndexError:
         pass
 
     stored_messages = wflowapi.get_workflow_messages(data['room'], topic = 'log')
     for msg in stored_messages:
-        sio.emit('room_msg', msg, room=sid, namespace='/test')
+        sio.emit('room_msg', msg, room=sid, namespace='/wflow')
 
     print('Adding Client {} to room {}'.format(sid, data['room']))
-    sio.enter_room(sid, data['room'], namespace='/test')
+    sio.enter_room(sid, data['room'], namespace='/wflow')
 
-@sio.on('roomit', namespace='/test')
+@sio.on('roomit', namespace='/wflow')
 def roomit(sid, data):
     print('Emitting to Room: {}'.format(data['room']))
-    sio.emit('join_ack', {'data':'Welcome a new member to the room {}'.format(data['room'])}, room=data['room'], namespace='/test')
+    sio.emit('join_ack', {'data':'Welcome a new member to the room {}'.format(data['room'])}, room=data['room'], namespace='/wflow')
 
-@sio.on('disconnect', namespace='/test')
+@sio.on('disconnect', namespace='/wflow')
 def disconnect(sid):
     print('Client disconnected')
 

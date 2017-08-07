@@ -35,11 +35,11 @@ def get_workflow_messages(workflow_id, topic):
     return resp.json()['msgs']
 
 def subjob_messages(subjob_id, topic):
-    logdata = requests.get(WFLOW_SERVER+'/subjob_msgs',
+    resp = requests.get(WFLOW_SERVER+'/subjob_msgs',
                         headers = {'content-type': 'application/json'},
                         data = json.dumps({'subjob_id': subjob_id, 'topic': topic})
     ).json()
-    return [x['msg'] for x in logdata['msgs']]
+    return resp['msgs']
 
 def all_wflows():
     return requests.get(WFLOW_SERVER+'/wflows').json()['wflows']

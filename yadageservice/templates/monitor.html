@@ -122,7 +122,7 @@ function update_yadage(date,state_data){
 $(document).ready(function(){
     initialize_graph();
 
-    namespace = '/test';
+    namespace = '/wflow';
     var socket = io.connect('//' + document.domain + ':' + location.port + namespace);
     socket_global = socket;
 

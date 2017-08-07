@@ -35,20 +35,14 @@ def background_thread():
         log.info('got message from wflow api %s', m)
         time.sleep(0.01)
         if m['type'] == 'message':
-            sio.emit('join_ack', {'data': 'got a message from wflowapi','msg':m} , room='testroom', namespace='/test')
-            data = msgpack.unpackb(m['data'])[0]
-            extras = msgpack.unpackb(m['data'])[1]
-            if(data['nsp'] == '/monitor'):
-                if(extras['rooms']):
-                    for room in extras['rooms']:
-                        try:
-                            msg_endpoint, msg_data = data['data'] # msg_endpoint usuall room_msg, msg_data = {'type':XXX, 'msg': YYY}
-                            sio.emit('room_msg', msg_data, room=room, namespace='/test')
-                        except:
-                            log.exception('something went wrong in message handling')
-                            pass
-                        finally:
-                            pass
+            wflow_msg = json.loads(m['data'])
+            try:
+                sio.emit('room_msg', wflow_msg, room=wflow_msg['wflowguid'], namespace='/test')
+            except:
+                log.exception('something went wrong in message handling')
+                pass
+            finally:
+                pass
 
 ############################################
 ############################################
@@ -122,8 +116,8 @@ def jobstatus(identifier):
 @app.route('/joboverview')
 @cern_oauth.login_required
 def joboverview():
-    all_jobs = wflowapi.all_jobs()
-    job_info = [{'jobguid':jid, 'details':{'status':stat}} for stat,jid in zip(wflowapi.workflow_status(all_jobs),all_jobs)]
+    all_wflows = wflowapi.all_wflows()
+    job_info = [{'jobguid':jid, 'details':{'status':stat}} for stat,jid in zip(wflowapi.workflow_status(all_wflows),all_wflows)]
     return render_template('joboverview.html', job_info = job_info)
 
 ## /subjobmon namespace
@@ -131,7 +125,7 @@ def joboverview():
 @sio.on('join', namespace='/subjobmon')
 def enter_sub(sid,data):
     #
-    historical_data = wflowapi.subjob_log(data['room'])
+    historical_data = wflowapi.subjob_messages(data['room'], topic = 'run')
     # for this session, emit historical data
     for x in historical_data[-3000:]:
         sio.emit('log_message',{'msg': x}, room = sid, namespace = '/subjobmon')
@@ -149,21 +143,19 @@ def connect(sid, environ):
 @sio.on('join', namespace='/test')
 def enter(sid, data):
     print('data', data)
+
+    states = wflowapi.get_workflow_messages(data['room'],topic = 'state')
+    try:
+        sio.emit('room_msg', states[-1], room=sid, namespace='/test')
+    except IndexError:
+        pass
+
+    stored_messages = wflowapi.get_workflow_messages(data['room'], topic = 'log')
+    for msg in stored_messages:
+        sio.emit('room_msg', msg, room=sid, namespace='/test')
+
     print('Adding Client {} to room {}'.format(sid, data['room']))
     sio.enter_room(sid, data['room'], namespace='/test')
-
-
-    latest_state = None
-    stored_messages = wflowapi.get_stored_messages(data['room'])
-    for msg in stored_messages:
-        old_msg_data = json.loads(msg)
-        if old_msg_data['type'] == 'yadage_state':
-            latest_state = old_msg_data
-            continue
-        else:
-            sio.emit('room_msg', old_msg_data, room=sid, namespace='/test')
-    if latest_state:
-        sio.emit('room_msg', latest_state, room=sid, namespace='/test')
 
 @sio.on('roomit', namespace='/test')
 def roomit(sid, data):
@@ -177,6 +169,7 @@ def disconnect(sid):
 
 if __name__ == '__main__':
     sio.start_background_task(background_thread)
+
     pywsgi.WSGIServer(('0.0.0.0', int(os.environ.get('YADAGE_PORT',5000))), app,
                       handler_class = WebSocketHandler,
                       keyfile = os.environ.get('YADAGE_SSL_KEY','server.key'),

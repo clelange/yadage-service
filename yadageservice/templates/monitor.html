@@ -79,11 +79,11 @@ function initialize_graph(){
     $('#nodebox').show()
     $('#nodebox h4').html(node.label)
     $('#nodebox div').html('State: '+node.state)
-    if(node.hasOwnProperty('proxy')){
-      nodeproxy = node['proxy']
-      if (nodeproxy.hasOwnProperty('proxydetails')){
-        $('#nodebox a').attr('href','/subjob_monitor/'+nodeproxy.proxydetails['task_id'])
-      }
+    if(node.proxy_id != undefined){
+        $('#nodebox a').attr('href','/subjob_monitor/'+node.proxy_id)
+    }
+    else {
+        $('#nodebox a').attr('prop','dis')
     }
   })
 }
@@ -96,12 +96,15 @@ function update_graph(node_data, edge_data){
     RUNNING: 'yellow'
   }
 
-  // nodes.clear();
-
-
   var now_nodes = _.map(node_data ,function(x){
-    return {id: x.id, label: x.name, color: state_color[x.state], shape: 'box', proxy: x.proxy, state: x.state}
+    var task_id = undefined
+    if(x.proxy != undefined){
+      task_id = x.proxy.proxydetails.task_id
+    }
+
+    return {id: x.id, color: state_color[x.state], shape: 'box', label: x.name, state: x.state, proxy_id: task_id}
   })
+
   nodes.update(now_nodes);
 
   var now_edges = _.map(edge_data ,function(x,index){
@@ -116,7 +119,6 @@ function update_yadage(date,state_data){
     $('#timestamp').html(date)
 }
 
-
 $(document).ready(function(){
     initialize_graph();
 
@@ -129,13 +131,13 @@ $(document).ready(function(){
     })
 
     socket.on('room_msg', function (data) {
-            console.log('got msg from room');
+            console.log('got msg from room ' + data.msg_type + ' ' + data.date);
             console.log(data)
-            if(data['type'] == 'log_message'){
+            if(data['msg_type'] == 'wflow_log'){
                 $('.logwindow').append('<div class="line"><span><code class="timestamp">'+data['date']+'</code></span><span><code class="message">'+escapeHTML(data['msg'])+'</code></span></div>')
             }
-            if(data['type'] == 'yadage_state'){
-                update_yadage(data['date'],data['data'])
+            if(data['msg_type'] == 'wflow_state'){
+                update_yadage(data['date'],data['state'])
             }
       });
       socket.emit('join', {room: '{{jobguid}}' });

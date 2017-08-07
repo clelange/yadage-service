@@ -20,31 +20,29 @@ def workflow_submit(workflow_spec):
     return processing_id
 
 def workflow_status(workflow_ids):
-    # import random
-    # return [random.choice(['SUCCESS','FAILURE']) for x in workflow_ids]
     resp = requests.get(WFLOW_SERVER+'/workflow_status',
     					 headers = {'content-type': 'application/json'},
     					 data = json.dumps({'workflow_ids': workflow_ids}),
             )
-    return resp.json()
+    return resp.json()['status_codes']
 
-def get_stored_messages(workflow_id):
+def get_workflow_messages(workflow_id, topic):
     # return ['one','two','three']
     resp = requests.get(WFLOW_SERVER+'/workflow_msgs',
                          headers = {'content-type': 'application/json'},
-                         data = json.dumps({'workflow_id': workflow_id}),
+                         data = json.dumps({'workflow_id': workflow_id, 'topic': topic}),
             )
-    return resp.json()
+    return resp.json()['msgs']
 
-def subjob_log(subjob_id):
+def subjob_messages(subjob_id, topic):
     logdata = requests.get(WFLOW_SERVER+'/subjob_msgs',
                         headers = {'content-type': 'application/json'},
-                        data = json.dumps({'subjob_id': subjob_id, 'topic': 'run'})
+                        data = json.dumps({'subjob_id': subjob_id, 'topic': topic})
     ).json()
-    return [x['msg'] for x in logdata]
+    return [x['msg'] for x in logdata['msgs']]
 
-def all_jobs():
-    return requests.get(WFLOW_SERVER+'/jobs').json()
+def all_wflows():
+    return requests.get(WFLOW_SERVER+'/wflows').json()['wflows']
 
 def logpubsub():
     server_data = requests.get(WFLOW_SERVER+'/pubsub_server').json()
@@ -56,10 +54,6 @@ def logpubsub():
     return pubsub
 
 def log_msg_stream(breaker = None):
-    # while True:
-    #     yield {'type':'unmessage'}
-    #     import time
-    #     time.sleep(1)
     pubsub = logpubsub()
     while True:
         if breaker and breaker():

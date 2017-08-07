@@ -66,10 +66,19 @@ def oauth_redirect(resp):
             data['lastname'],
             data['experiment'],
         ))
-        return redirect(next_url)
-    return redirect(url_for('home'))
+    return redirect(next_url)
 
 def login():
+    if os.environ.get('CERN_DUMMY_LOGIN',False):
+        next_url = request.args.get('next') or url_for('home')
+        login_user(login_module.User(
+            'lheinric_dummy',
+            'Lukas',
+            'Heinrich',
+            'ATLAS',
+        ))
+        return redirect(next_url)
+
     redirect_uri = os.environ['CERN_OAUTH_BASEURL'] + url_for('oauth_redirect')
     return oauth_app.authorize(callback=redirect_uri)
 

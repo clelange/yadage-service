@@ -29,7 +29,7 @@ $(document).ready(function(){
 
 
     socket.on('log_message', function(data){
-      $('.logwindow').append('<div class="line"><span><code class="message">'+escapeHTML(data['msg'])+'</code></span></div>')
+      $('.logwindow').append('<div class="line"><span><code class="timestamp">'+data['@timestamp']+'</code></span><span><code class="message">'+escapeHTML(data['msg'])+'</code></span></div>')
     })
 
     socket.emit('join', {room: '{{subjobid}}' });

@@ -31,21 +31,16 @@ app.config['SECRET_KEY'] = 'secret!'
 def background_thread():
     """Example of how to send server generated events to clients."""
     log.info('starting background thread')
-    for m in wflowapi.log_msg_stream():
-        # log.info('got message from wflow api %s', m)
+    for msg in wflowapi.log_msg_stream():
         time.sleep(0.01)
-        if m['type'] == 'message':
-            msg = json.loads(m['data'])
-            if msg['msg_type'] in ['wflow_log','wflow_state']:
-                try:
-                    sio.emit('room_msg', msg, room=msg['wflowguid'], namespace='/wflow')
-                except:
-                    log.exception('something went wrong in message handling')
-                    pass
-                finally:
-                    pass
-            if msg['msg_type'] == 'simple_log':
-                sio.emit('log_message', msg, room = msg['jobguid'], namespace = '/subjobmon')
+        if msg['msg_type'] in ['wflow_log','wflow_state']:
+            try:
+                sio.emit('room_msg', msg, room=msg['wflowguid'], namespace='/wflow')
+            except:
+                log.exception('something went wrong in message handling')
+                pass
+        if msg['msg_type'] == 'simple_log':
+            sio.emit('log_message', msg, room = msg['jobguid'], namespace = '/subjobmon')
 
 ############################################
 ############################################
@@ -69,11 +64,11 @@ def sandbox_submit():
     jobdb.register_job(processing_id,spec['shipout_spec']['location'])
     return jsonify({'jobguid': processing_id})
 
-@app.route('/results/<jobguid>')
-@app.route('/results/<jobguid>/<path:path>')
+@app.route('/results/<workflow_id>')
+@app.route('/results/<workflow_id>/<path:path>')
 @cern_oauth.login_required
-def results(jobguid, path = "."):
-    basepath = jobdb.resultdir(jobguid)
+def results(workflow_id, path = "."):
+    basepath = jobdb.resultdir(workflow_id)
     basepath = basepath.split(os.environ['YADAGE_RESULTBASE'],1)[-1].strip('/')
     return redirect(url_for('autoindex', path = os.path.join(basepath,path)))
 
@@ -171,7 +166,6 @@ def disconnect(sid):
 
 if __name__ == '__main__':
     sio.start_background_task(background_thread)
-
     pywsgi.WSGIServer(('0.0.0.0', int(os.environ.get('YADAGE_PORT',5000))), app,
                       handler_class = WebSocketHandler,
                       keyfile = os.environ.get('YADAGE_SSL_KEY','server.key'),

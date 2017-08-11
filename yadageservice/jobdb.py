@@ -1,5 +1,6 @@
 import redis
 import os
+
 def wflow_job_db():
    return redis.StrictRedis(
                 host = os.environ.get('YADAGE_JOBDB_REDIS_HOST','localhost'),
@@ -9,8 +10,8 @@ def wflow_job_db():
 
 db = wflow_job_db()
 
-def register_job(jobguid, resultdir):
-	db.set('yadagesvc:{}:resultdir'.format(jobguid),resultdir)
+def register_job(workflow_id, resultdir):
+	db.set('yadagesvc:{}:resultdir'.format(workflow_id),resultdir)
 
-def resultdir(jobguid):
-	return db.get('yadagesvc:{}:resultdir'.format(jobguid))
+def resultdir(workflow_id):
+	return db.get('yadagesvc:{}:resultdir'.format(workflow_id))

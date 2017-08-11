@@ -59,7 +59,8 @@ def log_msg_stream(breaker = None):
         if breaker and breaker():
             return
         message = pubsub.get_message()
-        if message:
-            log.info('yielding message %s', message)
-            yield message      
+        if message and message['type'] == 'message':
+            message_data = message['data']
+            log.info('yielding message %s', message_data)
+            yield json.loads(message_data)
         time.sleep(0.001)  # be nice to the system :)    

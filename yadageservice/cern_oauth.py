@@ -18,7 +18,7 @@ def extract_user_info(userdata):
     egroup_to_expt = {
         'cms-members': 'CMS',
         'alice-member': 'ALICE',
-        'atlas-active-members-all': 'ATLAS',
+        'atlas-current-physicists': 'ATLAS',
         'lhcb-general': 'LHCb'
     }
 
@@ -59,6 +59,7 @@ def oauth_redirect(resp):
 
     data = user_data(resp['access_token'])
     data = extract_user_info(data)
+    
     if 'experiment' in data and data['experiment'] == 'ATLAS':
         login_user(login_module.User(
             data['username'],

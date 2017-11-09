@@ -9,7 +9,7 @@ import msgpack
 import json
 import jobdb
 
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory
 from flask.ext.autoindex import AutoIndex
 
 from gevent import pywsgi

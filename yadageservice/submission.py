@@ -6,7 +6,8 @@ def yadage_spec(request_json):
         'wflowtype': 'yadage',
         'workflow': request_json['workflow'],
         'toplevel': request_json['toplevel'],
-        'fixed_pars': request_json['preset_pars']
+        'fixed_pars': request_json['preset_pars'],
+        'resultlist': ['_adage', '_yadage', '**/*.log'] + request_json['outputs'].split(','),
     }
 
 def submit_spec(request_json):
@@ -17,12 +18,11 @@ def submit_spec(request_json):
         'wflowconfigname': request_json['wflowname'],
         'shipout_spec': {
             'host': os.environ['YADAGE_SHIPTARGET_HOST'],
-            'location': os.path.join(os.environ['YADAGE_RESULTBASE'],uniqstub,wflowname),
+            'location': os.path.join(os.environ['YADAGE_RESULTBASE'],uniqstub,request_json['wflowname']),
             'user': os.environ['YADAGE_SHIPTARGET_USER'],
             'port': os.environ['YADAGE_SHIPTARGET_PORT'],
         },
         'queue': os.environ['YADAGE_WORKFLOW_QUEUE'],
-        'resultlist': ['_adage', '_yadage', '**/*.log'] + data['outputs'].split(','),
         'inputURL': request_json['inputURL'],
     }
     spec.update(**common_pars)

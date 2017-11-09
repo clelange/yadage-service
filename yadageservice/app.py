@@ -54,11 +54,9 @@ cern_oauth.init_app(app)
 @app.route('/workflow_submit', methods=['POST'])
 @cern_oauth.login_required
 def sandbox_submit():
-    data = request.json
-    log.info('workflow submission requested with data %s', data)
+    log.info('workflow submission requested with data %s', request.json)
 
-    data['outputs'] = data['outputs'].split(',')
-    spec = submission.submit_spec(**data)
+    spec = submission.submit_spec(request.json)
 
     processing_id = wflowapi.workflow_submit(spec)
     jobdb.register_job(processing_id,spec['shipout_spec']['location'])
@@ -95,6 +93,26 @@ def submit():
     presets['pars'] = json.dumps(json.loads(request.args.get('pars', '{}')))
     presets = {k: v for k, v in presets.iteritems() if v is not None}
     return render_template('submit.html', presets = presets)
+
+@app.route("/upload", methods=["POST"])
+@cern_oauth.login_required
+def upload():
+    import uuid
+    import werkzeug
+    filename = str(uuid.uuid4()).replace('-','')
+    log.warning('uploading!')
+
+    full_path = os.path.join(os.environ['YADAGE_UPLOADBASE'],filename)
+
+
+    def custom_stream_factory(total_content_length, filename, content_type, content_length=None):
+        target_file = open(full_path,'wb')
+        log.info("start receiving file ... filename => " + str(target_file))
+        return target_file
+
+    stream,form,files = werkzeug.formparser.parse_form_data(request.environ, stream_factory=custom_stream_factory)
+
+    return jsonify({'file_id':filename})
 
 @app.route('/monitor/<identifier>')
 @cern_oauth.login_required

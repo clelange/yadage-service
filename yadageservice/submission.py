@@ -24,6 +24,7 @@ def submit_spec(request_json):
         },
         'queue': os.environ['YADAGE_WORKFLOW_QUEUE'],
         'inputURL': request_json['inputURL'],
+        'inputAuth': request_json.get('inputAuth',False),
     }
     spec.update(**common_pars)
     return  spec

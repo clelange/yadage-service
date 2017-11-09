@@ -190,7 +190,9 @@ def disconnect(sid):
 
 if __name__ == '__main__':
     sio.start_background_task(background_thread)
-    pywsgi.WSGIServer(('0.0.0.0', int(os.environ.get('YADAGE_PORT',5000))), app,
+    port = int(os.environ.get('YADAGE_PORT',5000))
+    log.info('serving on %s', port)
+    pywsgi.WSGIServer(('0.0.0.0', port), app,
                       handler_class = WebSocketHandler,
                       keyfile = os.environ.get('YADAGE_SSL_KEY','server.key'),
                       certfile = os.environ.get('YADAGE_SSL_CERT','server.crt')

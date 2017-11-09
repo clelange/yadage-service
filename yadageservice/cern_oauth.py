@@ -59,7 +59,7 @@ def oauth_redirect(resp):
 
     data = user_data(resp['access_token'])
     data = extract_user_info(data)
-    
+
     if 'experiment' in data and data['experiment'] == 'ATLAS':
         login_user(login_module.User(
             data['username'],
@@ -89,6 +89,8 @@ def logout():
 
 def init_app(app):
     login_module.login_manager.init_app(app)
+    login_module.login_manager.login_view = 'login'
+
     global oauth_redirect
     global login
     global logout

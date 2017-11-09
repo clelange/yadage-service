@@ -117,7 +117,7 @@ def upload():
 @app.route("/workflow_input/<filename>", methods=["GET"])
 @cern_oauth.login_required
 def workfow_input(filename):
-    return send_from_directory(app.config['YADAGE_UPLOADBASE'],filename)
+    return send_from_directory(os.environ['YADAGE_UPLOADBASE'],filename)
 
 
 @app.route('/monitor/<identifier>')

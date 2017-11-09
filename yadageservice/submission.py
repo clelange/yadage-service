@@ -1,31 +1,29 @@
 import os
 import uuid
 
-# {
-#   'wflowname': 'check', 
-#   'workflow': 'madgraph_delphes.yml',
-#   'toplevel': 'from-github/phenochain',
-#   'outputs': 'delphes/output.lhco', 
-#   'inputURL': u'',
-#   'preset_pars': {'nevents': 100}
-# }
-
-
-def submit_spec(wflowname, workflow, toplevel, outputs, inputURL, preset_pars):
-    uniqstub = str(uuid.uuid4()).split('-')[-1]
-    return  {
+def yadage_loading_spec(request_json):
+    return {
         'wflowtype': 'yadage',
-        'wflowconfigname': wflowname,
-        'workflow': workflow,
-        'toplevel': toplevel,
-        'resultlist': ['_adage', '_yadage', '**/*.log'] + outputs,
-        'inputURL': inputURL,
-        'fixed_pars': preset_pars,
+        'workflow': request_json['workflow'],
+        'toplevel': request_json['toplevel'],
+        'fixed_pars': request_json['preset_pars']
+    }
+
+def submit_spec(request_json):
+    uniqstub = str(uuid.uuid4()).split('-')[-1]
+
+    spec = yadage_spec(request_json)
+    common_pars = {
+        'wflowconfigname': request_json['wflowname'],
         'shipout_spec': {
             'host': os.environ['YADAGE_SHIPTARGET_HOST'],
             'location': os.path.join(os.environ['YADAGE_RESULTBASE'],uniqstub,wflowname),
             'user': os.environ['YADAGE_SHIPTARGET_USER'],
-            'port': os.environ['YADAGE_SHIPTARGET_PORT']
+            'port': os.environ['YADAGE_SHIPTARGET_PORT'],
         },
         'queue': os.environ['YADAGE_WORKFLOW_QUEUE'],
+        'resultlist': ['_adage', '_yadage', '**/*.log'] + data['outputs'].split(','),
+        'inputURL': request_json['inputURL'],
     }
+    spec.update(**common_pars)
+    return  spec

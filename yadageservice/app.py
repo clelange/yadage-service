@@ -7,7 +7,7 @@ import time
 import os
 import msgpack
 import json
-import jobdb
+import database
 
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory
 from flask.ext.autoindex import AutoIndex
@@ -59,14 +59,14 @@ def sandbox_submit():
     spec = submission.submit_spec(request.json)
 
     processing_id = wflowapi.workflow_submit(spec)
-    jobdb.register_job(processing_id,spec['shipout_spec']['location'])
+    database.register_job(processing_id,spec['shipout_spec']['location'])
     return jsonify({'jobguid': processing_id})
 
 @app.route('/results/<workflow_id>')
 @app.route('/results/<workflow_id>/<path:path>')
 @cern_oauth.login_required
 def results(workflow_id, path = "."):
-    basepath = jobdb.resultdir(workflow_id)
+    basepath = database.resultdir(workflow_id)
     basepath = basepath.split(os.environ['YADAGE_RESULTBASE'],1)[-1].strip('/')
     return redirect(url_for('autoindex', path = os.path.join(basepath,path)))
 
@@ -81,6 +81,20 @@ def autoindex(path='.'):
 @app.route('/')
 def home():
     return render_template('home.html')
+
+
+@app.route('/register', methods = ['POST'])
+@cern_oauth.login_required
+def register():
+    database.generate_apikey(cern_oauth.current_user.user)
+    return redirect(url_for('profile'))
+
+@app.route('/profile')
+@cern_oauth.login_required
+def profile():
+    apikeys = database.apikeys(cern_oauth.current_user.user)
+    return render_template('profile.html', apikeys = apikeys)
+
 
 @app.route('/submit')
 @cern_oauth.login_required

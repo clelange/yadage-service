@@ -18,7 +18,7 @@
                 <li id="nav-allreq"><a href="{{url_for('joboverview')}}">Job Overview</a></li>
                 <li id="nav-allreq"><a href="{{url_for('submit')}}">Launch Workflow</a></li>
             {% if current_user.is_authenticated %}
-                <li id="nav-allreq"><a href="/"><span class="glyphicon glyphicon-user"></span> {{current_user.user}} ({{current_user.experiment}})</a></li>
+                <li id="nav-allreq"><a href="/profile"><span class="glyphicon glyphicon-user"></span> {{current_user.user}} ({{current_user.experiment}})</a></li>
                 <li id="nav-allreq"><a href="/logout"><i class="glyphicon glyphicon-log-out"></i>&nbsp;Logout</a></li>
             {% else %}
                 <li id="nav-allreq"><a href="/login">Login</a></li>

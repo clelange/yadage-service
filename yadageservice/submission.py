@@ -1,7 +1,7 @@
 import os
 import uuid
 
-def yadage_loading_spec(request_json):
+def yadage_spec(request_json):
     return {
         'wflowtype': 'yadage',
         'workflow': request_json['workflow'],

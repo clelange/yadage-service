@@ -32,6 +32,8 @@ def load_user_from_request(request):
     api_key = request.headers.get('Authorization')
     if api_key:
         api_key = api_key.replace('Bearer ', '', 1)
+        if api_key == os.environ['CERN_ATLAS_TOKEN']:
+            return User('atlasapi','ATLAS','Robot','ATLAS')
         user = database.apikey_user(api_key)
         if user:
             return User(**database.user_data(user))

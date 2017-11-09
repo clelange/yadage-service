@@ -114,6 +114,12 @@ def upload():
 
     return jsonify({'file_id':filename})
 
+@app.route("/workflow_input/<filename>", methods=["GET"])
+@cern_oauth.login_required
+def workfow_input(filename):
+    return send_from_directory(app.config['YADAGE_UPLOADBASE'],filename)
+
+
 @app.route('/monitor/<identifier>')
 @cern_oauth.login_required
 def monitor(identifier):

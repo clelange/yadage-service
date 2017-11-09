@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
 {% block postheader %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#analysisTable').DataTable();
+  } );
+</script>
+
 {% endblock %}
+
 
 {% block prebody %}
 {% endblock %}

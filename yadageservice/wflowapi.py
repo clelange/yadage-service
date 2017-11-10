@@ -63,4 +63,4 @@ def log_msg_stream(breaker = None):
             message_data = message['data']
             log.info('yielding message %s', message_data)
             yield json.loads(message_data)
-        time.sleep(0.001)  # be nice to the system :)    
+        time.sleep(0.001)  # be nice to the system :)

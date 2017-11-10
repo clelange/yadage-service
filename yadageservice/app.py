@@ -145,6 +145,15 @@ def monitor(identifier):
 def subjob_monitor(identifier):
     return render_template('subjobmonitor.html', subjobid = identifier)
 
+@app.route('/subjob_logs/<identifier>')
+@cern_oauth.login_required
+def subjob_logs(identifier):
+    topic = request.args.get('topic', 'run')
+    def generate():
+        for msg in wflowapi.subjob_messages(data['room'], topic = topic)
+            yield msg
+    return Response(generate(), mimetype='text/plain')
+
 @app.route('/jobstatus/<identifier>')
 @cern_oauth.login_required
 def jobstatus(identifier):

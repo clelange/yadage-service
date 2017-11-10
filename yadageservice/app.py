@@ -151,7 +151,7 @@ def subjob_logs(identifier):
     topic = request.args.get('topic', 'run')
     def generate():
         for msg in wflowapi.subjob_messages(identifier, topic = topic):
-            yield msg + '\n'
+            yield json.dumps(msg) + '\n'
     return Response(generate(), mimetype='text/plain')
 
 @app.route('/jobstatus/<identifier>')

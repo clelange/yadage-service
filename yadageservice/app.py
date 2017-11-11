@@ -146,11 +146,20 @@ def subjob_monitor(identifier):
     return render_template('subjobmonitor.html', subjobid = identifier)
 
 @app.route('/subjob_logs/<identifier>')
-# @cern_oauth.login_required
+@cern_oauth.login_required
 def subjob_logs(identifier):
     topic = request.args.get('topic', 'run')
     def generate():
         for msg in wflowapi.subjob_messages(identifier, topic = topic):
+            yield json.dumps(msg) + '\n'
+    return Response(generate(), mimetype='text/plain')
+
+@app.route('/wflow_logs/<identifier>')
+@cern_oauth.login_required
+def wflow_logs(identifier):
+    topic = request.args.get('topic', 'log')
+    def generate():
+        for msg in wflowapi.get_workflow_messages(identifier,topic = topic)
             yield json.dumps(msg) + '\n'
     return Response(generate(), mimetype='text/plain')
 

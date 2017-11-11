@@ -5,7 +5,6 @@ import socketio
 import logging
 import time
 import os
-import msgpack
 import json
 import database
 
@@ -159,7 +158,7 @@ def subjob_logs(identifier):
 def wflow_logs(identifier):
     topic = request.args.get('topic', 'log')
     def generate():
-        for msg in wflowapi.get_workflow_messages(identifier,topic = topic)
+        for msg in wflowapi.get_workflow_messages(identifier,topic = topic):
             yield json.dumps(msg) + '\n'
     return Response(generate(), mimetype='text/plain')
 

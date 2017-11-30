@@ -6,6 +6,7 @@ import logging
 import time
 import os
 import json
+import click
 import database
 
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory, Response
@@ -25,6 +26,10 @@ app = Flask(__name__)
 app.debug = True
 app.wsgi_app = socketio.Middleware(sio, app.wsgi_app)
 app.config['SECRET_KEY'] = 'secret!'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('YADAGE_JOBDB_URI','postgres://localhost')
+database.db.init_app(app)
+
 
 
 def background_thread():
@@ -219,8 +224,22 @@ def disconnect(sid):
     print('Client disconnected')
 
 
-if __name__ == '__main__':
-    sio.start_background_task(background_thread)
+
+
+@click.group()
+def cli():
+    pass
+
+@cli.command()
+@click.option('--create', default = True)
+@click.option('--startbgthread', default = True)
+def run_server(create,startbgthread):
+    if create:
+        with app.app_context():
+            database.db.create_all()
+
+    if startbgthread:
+        sio.start_background_task(background_thread)
     port = int(os.environ.get('YADAGE_PORT',5000))
     log.info('serving on %s', port)
     pywsgi.WSGIServer(('0.0.0.0', port), app,
@@ -228,3 +247,15 @@ if __name__ == '__main__':
                       keyfile = os.environ.get('YADAGE_SSL_KEY','server.key'),
                       certfile = os.environ.get('YADAGE_SSL_CERT','server.crt')
                       ).serve_forever()
+
+@cli.command()
+@click.option('--recreate', default = True)
+def drop_db(recreate):
+    with app.app_context():
+        database.db.drop_all()
+        if recreate:
+            database.db.create_all()
+
+
+if __name__ == '__main__':
+    cli()

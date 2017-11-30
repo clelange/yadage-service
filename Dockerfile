@@ -3,7 +3,8 @@ RUN dnf install -y gcc gcc-c++ graphviz-devel ImageMagick python-devel libffi-de
 RUN curl https://bootstrap.pypa.io/get-pip.py | python -
 RUN pip install Flask redis msgpack-python python-socketio gevent gevent-websocket requests
 
-RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -
+#RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -
+RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
 RUN dnf install -y nodejs
 RUN npm install -g bower;  echo '{ "allow_root": true }' > /root/.bowerrc
 

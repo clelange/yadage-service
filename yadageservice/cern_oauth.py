@@ -60,6 +60,8 @@ def oauth_redirect(resp):
     data = user_data(resp['access_token'])
     data = extract_user_info(data)
 
+    print 'USER!!', data
+
     if 'experiment' in data and data['experiment'] == 'ATLAS':
         user = login_module.User(
             data['username'],

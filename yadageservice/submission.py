@@ -22,7 +22,7 @@ def submit_spec(request_json):
             'user': os.environ['YADAGE_SHIPTARGET_USER'],
             'port': os.environ['YADAGE_SHIPTARGET_PORT'],
         },
-        'meta_details': request_json['meta_details'],
+        'meta_details': request_json.get('meta_details',{}),
         'queue': os.environ['YADAGE_WORKFLOW_QUEUE'],
         'inputURL': request_json['inputURL'],
         'inputAuth': request_json.get('inputAuth',False),

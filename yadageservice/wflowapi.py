@@ -49,7 +49,7 @@ def register_job(username, workflow_id, resultdir, details):
     database.db.session.commit()
 
 def resultdir(workflow_id):
-    wflow = YadageServiceUser.query.filter_by(wflow_id=workflow_id).first()
+    wflow = database.YadageServiceUser.query.filter_by(wflow_id=workflow_id).first()
     return wflow.result_dir
 
 def workflow_submit(username, workflow_spec):

@@ -20,14 +20,26 @@
     <h1>Backend Job Overview</h1>
 
     <table id="wflowTable" class="table table-striped">
-        <thead>
+
+      {% set columns = [
+          {'name': 'Job'} ,
+          {'name': 'Owner'},
+          {'name': 'Date'},
+          {'name': 'Labels', 'width': '20%'},
+          {'name': 'Status'},
+          {'name': 'Results'}]
+      %}
+      <colgroup>
+      {% for k in columns %}
+         <col width="{{k.get('width','')}}">
+      {% endfor %}
+      </colgroup>
+
+      <thead>
             <tr>
-                <th>Job ID</th>
-                <th>Owner</th>
-                <th>Date</th>
-                <th>Labels</th>
-                <th>Status</th>
-                <th>Results</th>
+              {% for k in columns %}
+                <th>{{k['name']}}</th>
+              {% endfor %}
             </tr>
         </thead>
         <tbody>

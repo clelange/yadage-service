@@ -62,6 +62,29 @@
 
   <h3>Submit a Workflow</h3>
 
+  <p>
+    Fill out the form below to submit a Workflow. This is useful for testing and demo-ing. If you want to submit
+    many workflow jobs, consider using the command line clients or the REST API
+  </p>
+
+  <h4> Workflow Parameters as JSON</h4>
+
+  <p>
+  The <code>yadage</code> workflow description allows workflows to be arbitarily parametrized. The data format in which the parameters are processed is the ubiquitous JSON. In order to add parameters, click on "Add New Value" and enter the property name and value.
+  </p>
+  <p>
+  Note: string <emph>values</emph> must be quoted in <code>"double quotes"</code>, but property values must not.
+  </p>
+  <p>
+  To remove a property, delete the key and click outside of the form.
+  </p>
+
+  <h4>Picking Outputs from workflow directory</h4>
+
+  <p>
+  After the workflow has finished processing, the work directory is deleted. In order to save outputs, fill the "Output" form field with a comma separated list of output paths (relative to the work directory)
+  </p>
+
 	<form id="sandboxform" action="javascript:submit_form()">
 
 	  <div class="form-group">
@@ -69,9 +92,9 @@
 	    <label for="toplevel">Reference Base URI</label>
 	    <input type="text" class="form-control" name="toplevel" placeholder="from-github/phenochain" value="{{presets.get('toplevel','')}}">
 	    <label for="workflow">Workflow</label>
-	    <input type="text" class="form-control" name="workflow" placeholder="workflow.yml" value="{{presets.get('workflow','')}}">
+	    <input type="text" class="form-control" name="workflow" placeholder="madgraph_delphes.yml" value="{{presets.get('workflow','')}}">
 	    <label for="inputURL">Desired Outputs</label>
-	    <input type="text" class="form-control" name="outputs" placeholder="plots/plot.pdf,data/fragment.txt" value="{{presets.get('outputs','')}}">
+	    <input type="text" class="form-control" name="outputs" placeholder="delphes/output.root,delphes/output.lhco" value="{{presets.get('outputs','')}}">
 	    <label for="inputURL">Optional Input Archive</label>
 	    <input type="text" class="form-control" name="inputURL" placeholder="http://example.com/archive.zip" value="{{presets.get('archive','')}}">
 	  </div>

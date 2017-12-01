@@ -56,6 +56,8 @@ Note: If you want to install the tol on CERN LXPLUS make sure to setup a non-anc
 <pre>
 $> scl enable python27 bash
 $> pip install --user 'yadage-service-cli[local]'
+$> export PYTHONPATH=$HOME/.local/lib/python2.7/site-packages:$PYTHONPATH
+$> export PATH=$HOME/.local/bin:$PATH
 </pre>
 
 
@@ -85,13 +87,18 @@ Please enter your API key: (enter your API key here)
 <p>
 Now you are ready to submit a workflow. Feel free to use this example that generates events with MadGraph and Pythia and runs them through a simplified detector simulation). You will get a link to a monitoring website.
 </p>
+
 <pre>
-$> yad submit madgraph_delphes.yml -t from-github/phenochain
+$> yad submit madgraph_delphes.yml -t from-github/phenochain \
        -o delphes/output.root -p nevents=100
 </pre>
 
+<h4> Contact: </h4>
+
+If you encounter any issues, please contact Lukas Heinrich at lukas.heinrich@cern.ch
 
 </div>
+
 
 
 

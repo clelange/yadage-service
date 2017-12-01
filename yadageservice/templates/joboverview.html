@@ -25,6 +25,7 @@
                 <th>Job ID</th>
                 <th>Owner</th>
                 <th>Date</th>
+                <th>Labels</th>
                 <th>Status</th>
                 <th>Results</th>
             </tr>
@@ -35,6 +36,13 @@
                 <td><a href="/monitor/{{row['jobguid']}}">{{row['jobguid']}}</a></td>
                 <td>{{row['details']['user']}}</td>
                 <td>{{row['details']['date'].strftime('%Y-%m-%d-%H-%M')}}</td>
+                <td>
+                  {% for k,v in row['user_details'].iteritems() %}
+                    <img style="display: inline-block; height: 15px" src="https://img.shields.io/badge/{{k}}-{{v}}-blue.svg?style=flat-square">
+                      <span style="display: none;">{{k}}: {{v}}</span>
+                    </img>
+                  {% endfor %}
+                </td>
                 <td>{{row['details']['status']}}</td>
                 <td>
                 {% if row['details']['status'] == 'SUCCESS' %}

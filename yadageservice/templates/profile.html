@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block postheader %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#wflowTable').DataTable({
+       "order": [[ 3, "desc" ]]
+    });
+  } );
+</script>
 
 {% endblock %}
 
@@ -10,15 +17,48 @@
 {% block container%}
 
 
-<div class="col-md-6">
+<div class="col-md-8">
 
-<h1>Profile</h1>
+<h1>Profile for {{current_user.user}} ({{current_user.experiment}})</h1>
 
+<h4> Your Recent Workflow submissions </h4>
+
+<table id="wflowTable" class="table table-striped">
+		<thead>
+				<tr>
+						<th>Job ID</th>
+						<th>Date</th>
+						<th>Status</th>
+						<th>Results</th>
+				</tr>
+		</thead>
+		<tbody>
+				{% for row in job_info %}
+					<tr>
+						<td><a href="/monitor/{{row['jobguid']}}">{{row['jobguid']}}</a></td>
+						<td>{{row['details']['date'].strftime('%Y-%m-%d-%H-%M')}}</td>
+						<td>{{row['details']['status']}}</td>
+						<td>
+						{% if row['details']['status'] == 'SUCCESS' %}
+								<a href="/results/{{row['jobguid']}}">Results</a>
+						{% else %}
+								Results
+						{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+		</tbody>
+</table>
+
+
+<h4> Your API Keys</h4>
 <ul>
 	{% for key in apikeys %}
 	<li>{{key}}</li>
 	{% endfor %}
 </ul>
+
+<rule>
 
 <form action="/register", method="post">
   <input type="submit" value="Generate API Key">

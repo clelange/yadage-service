@@ -39,7 +39,7 @@
         }
         var parjson = JSON.parse('{{presets['pars']|safe}}')
         $(document).ready(function(){
-		    var opt = { 
+		    var opt = {
 		        change: function(data) { parjson = data},
 		    };
 	        $('#workflowpars').jsonEditor(parjson, opt);
@@ -60,14 +60,12 @@
 
 <div class="col-md-6">
 
+  <h3>Submit a Workflow</h3>
+
 	<form id="sandboxform" action="javascript:submit_form()">
 
-	<div class="form-group">
-	    <label for="toplevel">Workflow Name</label>
-	    <input type="text" class="form-control" name="wflowname" placeholder="somename">
-	</div>
-
 	  <div class="form-group">
+      <input type="hidden" value="fromwebui" class="form-control" name="wflowname">
 	    <label for="toplevel">Reference Base URI</label>
 	    <input type="text" class="form-control" name="toplevel" placeholder="from-github/phenochain" value="{{presets.get('toplevel','')}}">
 	    <label for="workflow">Workflow</label>

@@ -10,26 +10,92 @@
 {% block container%}
 
 
-<div class="col-md-6">
+<div class="col-md-7">
 
 <h1>Yadage Workflow Service</h1>
 
-Welcome to the <code>yadage</code> 
-
-This is a demonstration service for executing yadage workflows on generic container clusters. 
+Welcome to the <code>yadage</code> workflow-as-a-service cluster that has been developed as part of the RECAST project and will soon be relaunches as the REANA project. This provides an early preview of REANA while the initial release is in development.
 
 
+<h3> What is this?</h3>
+<p>
 
-<h2> Example: Generating Madgraph Events</h2>
+The service allows you to run complex workflows of physics analysis code with the click of a button. Its main use case is as a cluster to power re-executions
+of LHC analyses for reproducibility and reinterpretation purposes. For the latter, we are also developing a dedicated user interface to manage, submit and analyze your reinterpretation results (RECAST).
+</p>
 
 <p>
-	By clicking the badge below, 
-
+To describe the analyses in a flexible manner we use the workflow description schema <code>yadage</code>. For documentation on how to define and test <code>yadage</code> workflows, see <a href="http://diana-hep.github.io/yadage">the documentation</a> and the <a  href="https://github.com/diana-hep/yadage">GitHub repository</a>.
 </p>
+
+<h3> Example: Generating Madgraph Events</h3>
+
+<p>
+If you want to get a feel for the service, before developing your own workflows, feel free to click on the button below. This will launch a workflow that generate simulated proton-proton collisions and extracts data from the Les Houches format files into a JSONLines format for easy consumptions.
+</p>
+
 
 <a href="/submit?toplevel=github%3Alukasheinrich%2Fweinberg-exp%3Aexample_yadage&amp;workflow=rootflow.yml&amp;pars=%7B%22sqrtshalf%22%3A+45%2C+%22Gf%22%3A+1.76639e-05%2C+%22nevents%22%3A+10000%2C+%22seeds%22%3A+%5B1%2C+2%2C+3%2C+4%5D%2C+%22polbeam1%22%3A+0%2C+%22polbeam2%22%3A+0%2C+%22paramcardtempl%22%3A+%22param_card.templ%22%2C+%22runcardtempl%22%3A+%22run_card.templ%22%2C+%22proccardtempl%22%3A+%22sm_proc_card.templ%22%7D&amp;archive=https%3A%2F%2Fraw.githubusercontent.com%2Flukasheinrich%2Fweinberg-exp%2Fmaster%2Fexample_yadage%2Finput.zip&amp;outputs=merge%2Fout.jsonl"><img src="https://camo.githubusercontent.com/7cff0585b228114603e2f0e7db1c4ffc74bd2b17/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f72756e5f7961646167652d7765696e626572672d3431383741442e737667" alt="yadage workflow" data-canonical-src="https://img.shields.io/badge/run_yadage-weinberg-4187AD.svg" style="max-width:100%;"></a>
 
+<h3>Getting Started</h3>
+
+<h4>1.Install the client tools</h4>
+
+<p>
+The service provides a REST API for experts, but we also offer python-based tool <code>yad</code> so that you can conveniently submit your workflows.
+</p>
+
+<pre>
+$> pip install 'yadage-service-cli[local]'
+</pre>
+
+<p>
+Note: If you want to install the tol on CERN LXPLUS make sure to setup a non-ancient python version first
+</p>
+
+<pre>
+$> scl enable python27 bash
+$> pip install --user 'yadage-service-cli[local]'
+</pre>
+
+
+<h4>2. Generating a API key for submission from the command line</h4>
+
+<p>
+<a href="/login"> Login</a> with your CERN account and visit your profile and click the button to generate a unique API key. This will allow yo to authenticate easily to the service without certificates or sharing your password.
+</p>
+
+<h4>3. Login and submit your first Workflow</h4>
+
+<pre>
+$> yad login
+
+yadage service
+--------------
+Hi, if you already have a API key for https://yadage.cern.ch
+please enter it below.
+
+If not, please visit https://yadage.cern.ch/profile (make sure
+you are logged in or click 'Login' on the upper right
+hand side) and click 'Generate API Key'
+
+Please enter your API key: (enter your API key here)
+</pre>
+
+<p>
+Now you are ready to submit a workflow. Feel free to use this example that generates events with MadGraph and Pythia and runs them through a simplified detector simulation). You will get a link to a monitoring website.
+</p>
+<pre>
+$> yad submit madgraph_delphes.yml -t from-github/phenochain
+       -o delphes/output.root -p nevents=100
+</pre>
+
+
 </div>
+
+
+
+
 
 
 {% endblock %}

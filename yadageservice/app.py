@@ -61,16 +61,15 @@ def sandbox_submit():
     log.info('workflow submission requested with data %s', request.json)
 
     spec = submission.submit_spec(request.json)
+    processing_id = wflowapi.workflow_submit(cern_oauth.current_user.user, spec)
 
-    processing_id = wflowapi.workflow_submit(spec)
-    database.register_job(processing_id,spec['shipout_spec']['location'])
     return jsonify({'jobguid': processing_id})
 
 @app.route('/results/<workflow_id>')
 @app.route('/results/<workflow_id>/<path:path>')
 @cern_oauth.login_required
 def results(workflow_id, path = "."):
-    basepath = database.resultdir(workflow_id)
+    basepath = wflowapi.resultdir(workflow_id)
     basepath = basepath.split(os.environ['YADAGE_RESULTBASE'],1)[-1].strip('/')
     return redirect(url_for('autoindex', path = os.path.join(basepath,path)))
 
@@ -97,8 +96,11 @@ def register():
 @cern_oauth.login_required
 def profile():
     apikeys = database.apikeys(cern_oauth.current_user.user)
-    return render_template('profile.html', apikeys = apikeys)
-
+    return render_template('profile.html',
+        apikeys = apikeys,
+        job_info = wflowapi.all_wflows(username = cern_oauth.current_user.user,
+        details = True)
+    )
 
 @app.route('/submit')
 @cern_oauth.login_required
@@ -175,9 +177,7 @@ def jobstatus(identifier):
 @app.route('/joboverview')
 @cern_oauth.login_required
 def joboverview():
-    all_wflows = wflowapi.all_wflows()
-    job_info = [{'jobguid':jid, 'details':{'status':stat}} for stat,jid in zip(wflowapi.workflow_status(all_wflows),all_wflows)]
-    return render_template('joboverview.html', job_info = job_info)
+    return render_template('joboverview.html', job_info = wflowapi.all_wflows(details = True))
 
 ## /subjobmon namespace
 

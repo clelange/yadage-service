@@ -3,6 +3,7 @@ import os
 import hashlib
 import uuid
 import base64
+from datetime import datetime
 import json
 
 from flask_sqlalchemy import SQLAlchemy
@@ -12,9 +13,9 @@ class YadageServiceWorkflow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     wflow_id   = db.Column(db.String(36), unique=True, nullable=False)
     result_dir = db.Column(db.String(), nullable=False)
-
-    def __repr__(self):
-        return '<Workflow %r>' % self.wflow_id
+    sub_date = db.Column(db.DateTime, nullable=False,default=datetime.utcnow)
+    user_id  = db.Column(db.Integer, db.ForeignKey('yadage_service_user.id'),nullable=False)
+    detail_data = db.Column(db.JSON(), nullable=False, default = {})
 
 class YadageServiceUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,20 +24,12 @@ class YadageServiceUser(db.Model):
     user = db.Column(db.String(), nullable=False)
     expt = db.Column(db.String(), nullable=False)
     api_keys = db.relationship('YadageServiceAPIKey', backref='user', lazy=True)
+    wflow_submissions = db.relationship('YadageServiceWorkflow', backref='user', lazy=True)
 
 class YadageServiceAPIKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('yadage_service_user.id'),nullable=False)
-
-def register_job(workflow_id, resultdir):
-    wflow = YadageServiceWorkflow(wflow_id = workflow_id, result_dir = resultdir)
-    db.session.add(wflow)
-    db.session.commit()
-
-def resultdir(workflow_id):
-    wflow = YadageServiceUser.query.filter_by(wflow_id=workflow_id).first()
-    return wflow.result_dir
 
 def register_user(user,b64data):
     user_data = json.loads(base64.b64decode(b64data))

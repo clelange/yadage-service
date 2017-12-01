@@ -4,12 +4,55 @@ import requests
 import json
 import redis
 import time
+import database
+from sqlalchemy import desc
+
 
 log = logging.getLogger(__name__)
 
 WFLOW_SERVER = os.environ.get('YADAGE_WORKFLOW_SERVER','http://localhost')
 
-def workflow_submit(workflow_spec):
+def all_wflows(username = None, details = False, status = False):
+    if username:
+        query = database.YadageServiceWorkflow.query.filter(
+                    database.YadageServiceWorkflow.user.has(user=username)
+                ).order_by(
+                    desc(database.YadageServiceWorkflow.sub_date)
+                ).limit(200)
+    else:
+        query = database.YadageServiceWorkflow.query.order_by(
+            desc(database.YadageServiceWorkflow.sub_date)
+        )
+    wflows = query.all()
+    if not details:
+        return [w.wflow_id for w in wflows]
+    wflows_info = []
+    wflows_status = workflow_status([w.wflow_id for w in wflows])
+    for w,stat in zip(wflows,wflows_status):
+        details = dict(status = stat, user = w.user.user, date = w.sub_date)
+        wflows_info.append({
+            'jobguid': w.wflow_id,
+            'details': details,
+            'user_details': w.detail_data
+        })
+    return wflows_info
+
+def register_job(username, workflow_id, resultdir, details):
+    user = database.YadageServiceUser.query.filter_by(user=username).first()
+    wflow = database.YadageServiceWorkflow(
+        user = user,
+        wflow_id = workflow_id,
+        result_dir = resultdir,
+        detail_data = details
+    )
+    database.db.session.add(wflow)
+    database.db.session.commit()
+
+def resultdir(workflow_id):
+    wflow = YadageServiceUser.query.filter_by(wflow_id=workflow_id).first()
+    return wflow.result_dir
+
+def workflow_submit(username, workflow_spec):
     # return ['2314t1234']
     log.info('submitting to workflow server: %s',workflow_spec)
     resp = requests.post(WFLOW_SERVER+'/workflow_submit',
@@ -17,6 +60,13 @@ def workflow_submit(workflow_spec):
     					 data = json.dumps(workflow_spec),
             )
     processing_id = resp.json()['id']
+
+    register_job(
+        username,
+        processing_id,
+        workflow_spec['shipout_spec']['location'],
+        details = workflow_spec.get('meta_details',{})
+    )
     return processing_id
 
 def workflow_status(workflow_ids):
@@ -27,7 +77,6 @@ def workflow_status(workflow_ids):
     return resp.json()['status_codes']
 
 def get_workflow_messages(workflow_id, topic):
-    # return ['one','two','three']
     resp = requests.get(WFLOW_SERVER+'/workflow_msgs',
                          headers = {'content-type': 'application/json'},
                          data = json.dumps({'workflow_id': workflow_id, 'topic': topic}),
@@ -40,9 +89,6 @@ def subjob_messages(subjob_id, topic):
                         data = json.dumps({'subjob_id': subjob_id, 'topic': topic})
     ).json()
     return resp['msgs']
-
-def all_wflows():
-    return requests.get(WFLOW_SERVER+'/wflows').json()['wflows']
 
 def logpubsub():
     server_data = requests.get(WFLOW_SERVER+'/pubsub_server').json()

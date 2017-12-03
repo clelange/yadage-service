@@ -20,9 +20,12 @@
   "dependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
-    "lodash": "^4.17.4",
-    "vis": "^4.19.1",
     "datatables.net": "^1.10.16",
-    "datatables.net-jqui": "^2.1.1"
+    "datatables.net-jqui": "^2.1.1",
+    "requirejs": "^2.3.5",
+    "yadage-js": "^0.0.6"
+  },
+  "resolutions": {
+    "lodash": "^3.10.0"
   }
 }

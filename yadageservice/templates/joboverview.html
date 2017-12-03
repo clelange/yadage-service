@@ -27,7 +27,8 @@
           {'name': 'Date'},
           {'name': 'Labels', 'width': '20%'},
           {'name': 'Status'},
-          {'name': 'Results'}]
+          {'name': 'Results'}
+          ]
       %}
       <colgroup>
       {% for k in columns %}
@@ -50,7 +51,7 @@
                 <td>{{row['details']['user']}}</td>
                 <td>{{row['details']['date'].strftime('%Y-%m-%d-%H-%M')}}</td>
                 <td>
-                  {% for k,v in row['user_details'].iteritems() %}
+                  {% for k,v in row['user_details'].iteritems()  %}
                     <img style="display: inline-block; height: 17px" src="https://img.shields.io/badge/{{k}}-{{v}}-blue.svg?style=flat">
                       <span style="display: none;">{{k}}: {{v}}</span>
                     </img>

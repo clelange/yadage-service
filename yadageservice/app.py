@@ -85,6 +85,10 @@ def autoindex(path='.'):
 def home():
     return render_template('home.html')
 
+@app.route('/examples')
+def examples():
+    return render_template('examples.html')
+
 
 @app.route('/register', methods = ['POST'])
 @cern_oauth.login_required

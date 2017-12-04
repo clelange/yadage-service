@@ -26,7 +26,6 @@ requirejs.config({
 
 <style type="text/css">
     #viz-container {
-      height: 400px;
     }
     #viz-canvas {
     }
@@ -77,13 +76,13 @@ function initialize_graph(yadage){
       state_to_bstp = {'DEFINED': 'info', 'RUNNING': 'warning', 'FAILED': 'danger', 'SUCCESS': 'success'}
 
 
-      $('#nodebox-state').removeClass('label-info')
-      $('#nodebox-state').removeClass('label-light')
-      $('#nodebox-state').removeClass('label-warning')
-      $('#nodebox-state').removeClass('label-danger')
-      $('#nodebox-state').removeClass('label-success')
+      $('#nodebox-state').removeClass('badge-info')
+      $('#nodebox-state').removeClass('badge-light')
+      $('#nodebox-state').removeClass('badge-warning')
+      $('#nodebox-state').removeClass('badge-danger')
+      $('#nodebox-state').removeClass('badge-success')
 
-      $('#nodebox-state').addClass('label-'+state_to_bstp[details.state])
+      $('#nodebox-state').addClass('badge-'+state_to_bstp[details.state])
 
       var task_id = undefined
       if(details.proxy != undefined){
@@ -164,14 +163,14 @@ function escapeHTML(s) {
 
 
 <div class="row">
-    <div class="col-md-14">
+    <div class="col">
 
           {% set status_to_bootstrap = {'SUCCESS': 'success', 'FAILURE': 'danger', 'STARTED': 'info', 'PENDING': 'warning'} %}
 
-          <h4> Status: <span class="label label-{{status_to_bootstrap[status]}}">{{status}}</span></h4>
+          <h4> Status: <span class="badge badge-{{status_to_bootstrap[status]}}">{{status}}</span></h4>
+          <p> The Workflow has completed successfully. <a href="/results/{{workflow_id}}">View Results</a></p>
     </div>
     {% if status=='SUCCESS' %}
-      <p> The Workflow has completed successfully. <a href="/results/{{workflow_id}}">View Results</a></p>
 
     {% endif %}
 
@@ -180,9 +179,9 @@ function escapeHTML(s) {
 
 
 <div class="row">
-    <div class="col-md-14" id="viz-container">
+    <div class="col" id="viz-container">
         <div class="row" id="viz-canvas-header">
-          <div class="col-md-12" id="viz-canvas" style="height:100%;">
+          <div class="col" id="viz-canvas">
             <h3>Workflow Visualization</h3>
             <div>
               <button class="btn-xs btn-primary" onclick="require('yadage-js').redraw_graph();">redraw</button>
@@ -192,33 +191,35 @@ function escapeHTML(s) {
             </div>
           </div>
         </div>
-        <div class="row" style="height: 400px">
-          <div class="col-md-10" id="viz-canvas" style="height:100%;">
+        <div class="row" style="min-height: 400px;">
+          <div class="col-lg-10" id="viz-canvas" style="min-height: 400px;">
             <div id="yadage-viz"></div>
           </div>
-          <div class="col-md-2" id="nodebox" style="display: none">
+          <div class="col col-md-2" id="nodebox" style="display: none">
 
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title" id="nodebox-title">Task: madgraph</h4>
-              </div>
-              <div class="panel-body">
-                  <span class="label" id="nodebox-state"></span></dd>
-                  <a href="#" class="btn btn-default btn-xs" id="nodebox-logbutton">Logs</a>
-                </dl>
+            <div class="card">
+              <div class="card-block">
+                <h4 class="card-title" id="nodebox-title">Card title</h4>
+                <span class="badge" id="nodebox-state"></span></dd>
+                <br/>
+                <a href="#" class="btn btn-primary btn-sm" id="nodebox-logbutton">Logs</a>
+
               </div>
             </div>
+
           </div>
         </div>
         <div class="row" id="viz-canvas-footer">
-          <center>
-            Last seen: <span id="timestamp"></span>
-          </center>
+          <div class="col">
+            <center>
+              Last seen: <span id="timestamp"></span>
+            </center>
+          </div>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-md-14">
+    <div class="col">
         <div>
             <h3>Log</h3>
             <p>Messages from the request processor will appear below. </p>

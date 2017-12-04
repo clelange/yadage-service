@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-fixed-top top-bar">
+<!-- <nav class="navbar navbar-default navbar-fixed-top top-bar">
     <div class="container-fluid">
 
         <div class="navbar-header">
@@ -16,6 +16,7 @@
        <div class="collapse navbar-collapse menu" id="navbar-collapse">
             <ul class="nav navbar-nav">
                 <li id="nav-allreq"><a href="{{url_for('home')}}">Home</a></li>
+                <li id="nav-allreq"><a href="{{url_for('examples')}}">Examples</a></li>
                 <li id="nav-allreq"><a href="{{url_for('joboverview')}}">Workflow Submissions</a></li>
                 <li id="nav-allreq"><a href="{{url_for('submit')}}">Launch Workflow</a></li>
             {% if current_user.is_authenticated %}
@@ -27,4 +28,26 @@
             </ul>
         </div>
     </div>
+</nav> -->
+
+<nav class="navbar navbar-toggleable-md navbar-inverse top-bar">
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="#">Yadage Service</a>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li id="nav-allreq" class="nav-link"><a class="nav-link" href="{{url_for('home')}}">Home</a></li>
+      <li id="nav-allreq" class="nav-link"><a class="nav-link" href="{{url_for('examples')}}">Examples</a></li>
+      <li id="nav-allreq" class="nav-link"><a class="nav-link" href="{{url_for('joboverview')}}">Workflow Submissions</a></li>
+      <li id="nav-allreq" class="nav-link"><a class="nav-link" href="{{url_for('submit')}}">Launch Workflow</a></li>
+  {% if current_user.is_authenticated %}
+      <li id="nav-allreq" class="nav-link"><a class="nav-link" href="/profile"><span class="glyphicon glyphicon-user"></span> {{current_user.user}} ({{current_user.experiment}})</a></li>
+      <li id="nav-allreq" class="nav-link"><a class="nav-link" href="/logout"><i class="glyphicon glyphicon-log-out"></i>&nbsp;Logout</a></li>
+  {% else %}
+      <li id="nav-allreq" class="nav-link"><a class="nav-link" href="/login">Login</a></li>
+  {% endif %}
+    </ul>
+  </div>
 </nav>

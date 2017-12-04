@@ -18,14 +18,16 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
     "datatables.net": "^1.10.16",
     "datatables.net-jqui": "^2.1.1",
     "requirejs": "^2.3.5",
-    "yadage-js": "^0.0.6"
+    "yadage-js": "^0.0.6",
+    "bootstrap": "4.0.0-alpha.6",
+    "datatables.net-bs4": "^3.2.2"
   },
   "resolutions": {
-    "lodash": "^3.10.0"
+    "jquery": "^3.2.1",
+    "bootstrap": "4.0.0-alpha.6"
   }
 }

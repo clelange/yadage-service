@@ -33,11 +33,12 @@
 				</tr>
 		</thead>
 		<tbody>
+        {% set status_to_bootstrap = {'SUCCESS': 'success', 'FAILURE': 'danger', 'STARTED': 'info', 'PENDING': 'warning'} %}
 				{% for row in job_info %}
 					<tr>
 						<td><a href="/monitor/{{row['jobguid']}}">{{row['jobguid']}}</a></td>
 						<td>{{row['details']['date'].strftime('%Y-%m-%d-%H-%M')}}</td>
-						<td>{{row['details']['status']}}</td>
+            <td><span class="badge badge-{{status_to_bootstrap[row['details']['status']]}}">{{row['details']['status']}}</span></td>
 						<td>
 						{% if row['details']['status'] == 'SUCCESS' %}
 								<a href="/results/{{row['jobguid']}}">Results</a>
@@ -61,7 +62,7 @@
 <rule>
 
 <form action="/register", method="post">
-  <input type="submit" value="Generate API Key">
+  <input type="submit" value="Generate API Key" class="btn btn-primary">
 </form>
 
 

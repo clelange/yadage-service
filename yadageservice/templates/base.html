@@ -13,9 +13,9 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='custom/css/style.css')}}">
     <script src="{{ url_for('static',filename='bower_components/jquery/dist/jquery.min.js')}}"></script>
 
-    <link rel="stylesheet" href="{{ url_for('static',filename='bower_components/datatables.net-jqui/css/dataTables.jqueryui.min.css')}}">
-    <script src="{{ url_for('static',filename='bower_components/datatables.net-jqui/js/dataTables.jqueryui.min.js')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static',filename='bower_components/datatables.net-bs4//css/dataTables.bootstrap4.min.css')}}">
     <script src="{{ url_for('static',filename='bower_components/datatables.net/js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static',filename='bower_components/datatables.net-bs4//js/dataTables.bootstrap4.js')}}"></script>
 
     {% block postheader %}
     {% endblock %}
@@ -25,22 +25,22 @@
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <script src="{{ url_for('static',filename='bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
-  <style type="text/css" media="screen">
-      body { padding-top: 70px; }
-  </style>
 
   {% include "nav.html" %}
 
   {% block prebody %}
   {% endblock %}
 
-  <div class="container">
+  <div class="container" id="maincontainer">
       {% block container %}
       <div id="row" style="background-color:red;">
           hello
       </div>
       {% endblock %}
   </div>
+
+  <footer>
+  </footer>
 
 </body>
 </html>

@@ -168,7 +168,10 @@ function escapeHTML(s) {
           {% set status_to_bootstrap = {'SUCCESS': 'success', 'FAILURE': 'danger', 'STARTED': 'warning', 'ACTIVE': 'warning', 'REGISTERED': 'info'} %}
 
           <h4> Status: <span class="badge badge-{{status_to_bootstrap[status]}}">{{status}}</span></h4>
+
+          {% if status == 'SUCCESS' %}
           <p> The Workflow has completed successfully. <a href="/results/{{workflow_id}}">View Results</a></p>
+          {% endif %}
     </div>
     {% if status=='SUCCESS' %}
 

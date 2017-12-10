@@ -44,7 +44,7 @@
             </tr>
         </thead>
         <tbody>
-            {% set status_to_bootstrap = {'SUCCESS': 'success', 'FAILURE': 'danger', 'STARTED': 'info', 'PENDING': 'warning'} %}
+            {% set status_to_bootstrap = {'SUCCESS': 'success', 'FAILURE': 'danger', 'STARTED': 'warning', 'ACTIVE': 'warning', 'REGISTERED': 'info'} %}
             {% for row in job_info %}
               <tr>
                 <td><a href="/monitor/{{row['jobguid']}}">{{row['jobguid']}}</a></td>

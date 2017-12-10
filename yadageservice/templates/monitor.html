@@ -165,7 +165,7 @@ function escapeHTML(s) {
 <div class="row">
     <div class="col">
 
-          {% set status_to_bootstrap = {'SUCCESS': 'success', 'FAILURE': 'danger', 'STARTED': 'info', 'PENDING': 'warning'} %}
+          {% set status_to_bootstrap = {'SUCCESS': 'success', 'FAILURE': 'danger', 'STARTED': 'warning', 'ACTIVE': 'warning', 'REGISTERED': 'info'} %}
 
           <h4> Status: <span class="badge badge-{{status_to_bootstrap[status]}}">{{status}}</span></h4>
           <p> The Workflow has completed successfully. <a href="/results/{{workflow_id}}">View Results</a></p>

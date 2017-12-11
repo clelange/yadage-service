@@ -92,9 +92,7 @@ def subjob_messages(subjob_id, topic):
 
 def logpubsub():
     server_data = requests.get(WFLOW_SERVER+'/pubsub_server').json()
-    red = redis.StrictRedis(host = server_data['host'],
-                              db = server_data['db'],
-                            port = server_data['port'],)
+    red = redis.StrictRedis.from_url(server_data['url'])
     pubsub = red.pubsub()
     pubsub.subscribe(server_data['channel'])
     return pubsub

@@ -4,6 +4,7 @@ import uuid
 def yadage_spec(request_json):
     return {
         'wflowtype': 'yadage',
+        'interactive': True if int(request_json['interactive']) else False,
         'workflow': request_json['workflow'],
         'toplevel': request_json['toplevel'],
         'fixed_pars': request_json['preset_pars'],
@@ -24,7 +25,7 @@ def submit_spec(request_json):
         },
         'meta_details': request_json.get('meta_details',{}),
         'queue': os.environ['YADAGE_WORKFLOW_QUEUE'],
-        'inputURL': request_json['inputURL'],
+        'inputURL': request_json['archive'],
         'inputAuth': request_json.get('inputAuth',False),
     }
     spec.update(**common_pars)

@@ -61,7 +61,7 @@ def sandbox_submit():
     log.info('workflow submission requested with data %s', request.json)
 
     spec = submission.submit_spec(request.json)
-    processing_id = wflowapi.workflow_submit(cern_oauth.current_user.user, spec)
+    processing_id = wflowapi.workflow_submit(cern_oauth.current_user.user, spec, request.json)
 
     return jsonify({'jobguid': processing_id})
 

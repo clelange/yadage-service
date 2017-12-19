@@ -37,7 +37,7 @@ def all_wflows(username = None, details = False, status = False):
         })
     return wflows_info
 
-def register_job(username, workflow_id, resultdir, details):
+def register_wflow(username, workflow_id, resultdir, details, submission_data):
     user = database.YadageServiceUser.query.filter_by(user=username).first()
     wflow = database.YadageServiceWorkflow(
         user = user,
@@ -52,7 +52,7 @@ def resultdir(workflow_id):
     wflow = database.YadageServiceWorkflow.query.filter_by(wflow_id=workflow_id).first()
     return wflow.result_dir
 
-def workflow_submit(username, workflow_spec):
+def workflow_submit(username, workflow_spec, submission_spec):
     # return ['2314t1234']
     log.info('submitting to workflow server: %s',workflow_spec)
     resp = requests.post(WFLOW_SERVER+'/workflow_submit',
@@ -61,11 +61,12 @@ def workflow_submit(username, workflow_spec):
             )
     processing_id = resp.json()['id']
 
-    register_job(
+    register_wflow(
         username,
         processing_id,
         workflow_spec['shipout_spec']['location'],
-        details = workflow_spec.get('meta_details',{})
+        details = workflow_spec.get('meta_details',{}),
+        submission_data = submission_spec
     )
     return processing_id
 

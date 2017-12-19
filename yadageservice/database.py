@@ -1,5 +1,3 @@
-import redis
-import os
 import hashlib
 import uuid
 import base64
@@ -16,6 +14,8 @@ class YadageServiceWorkflow(db.Model):
     sub_date = db.Column(db.DateTime, nullable=False,default=datetime.utcnow)
     user_id  = db.Column(db.Integer, db.ForeignKey('yadage_service_user.id'),nullable=False)
     detail_data = db.Column(db.JSON(), nullable=False, default = {})
+    submission_data = db.Column(db.JSON(), nullable=False, default = {})
+
 
 class YadageServiceUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)

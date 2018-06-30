@@ -1,7 +1,10 @@
+
+
+
 import os
 import requests
 from flask import redirect, url_for, request
-from flask_oauth import OAuth
+from authlib.flask.client import OAuth
 from flask_login import login_user, logout_user
 import login as login_module
 
@@ -35,7 +38,7 @@ def extract_user_info(userdata):
     return userjson
 
 oauth = OAuth()
-oauth_app = oauth.remote_app('oauth_app',
+oauth_app = oauth.register('oauth_app',
                              base_url=None,
                              request_token_url=None,
                              access_token_url=os.environ['CERN_OAUTH_TOKENURL'],
@@ -60,7 +63,7 @@ def oauth_redirect(resp):
     data = user_data(resp['access_token'])
     data = extract_user_info(data)
 
-    print 'USER!!', data
+    print('USER!!', data)
 
     if 'experiment' in data and data['experiment'] == 'ATLAS':
         user = login_module.User(

@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from gevent import monkey
 monkey.patch_all()
 
@@ -10,7 +12,8 @@ import click
 import database
 
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory, Response
-from flask.ext.autoindex import AutoIndex
+import flask_silk
+from flask_autoindex import AutoIndex
 
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
@@ -115,7 +118,7 @@ def submit():
     presets['outputs'] = request.args.get('outputs', None)
     presets['archive'] = request.args.get('archive', None)
     presets['pars'] = json.dumps(json.loads(request.args.get('pars', '{}')))
-    presets = {k: v for k, v in presets.iteritems() if v is not None}
+    presets = {k: v for k, v in presets.items() if v is not None}
     return render_template('submit.html', presets = presets)
 
 @app.route("/upload", methods=["POST"])
@@ -203,7 +206,7 @@ def connect(sid, environ):
 
 @sio.on('join', namespace='/wflow')
 def enter(sid, data):
-    print('data', data)
+    print(('data', data))
 
     states = wflowapi.get_workflow_messages(data['room'],topic = 'state')
     try:
@@ -215,12 +218,12 @@ def enter(sid, data):
     for msg in stored_messages:
         sio.emit('room_msg', msg, room=sid, namespace='/wflow')
 
-    print('Adding Client {} to room {}'.format(sid, data['room']))
+    print(('Adding Client {} to room {}'.format(sid, data['room'])))
     sio.enter_room(sid, data['room'], namespace='/wflow')
 
 @sio.on('roomit', namespace='/wflow')
 def roomit(sid, data):
-    print('Emitting to Room: {}'.format(data['room']))
+    print(('Emitting to Room: {}'.format(data['room'])))
     sio.emit('join_ack', {'data':'Welcome a new member to the room {}'.format(data['room'])}, room=data['room'], namespace='/wflow')
 
 @sio.on('disconnect', namespace='/wflow')

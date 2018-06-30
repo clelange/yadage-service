@@ -8,7 +8,7 @@ RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
 RUN dnf install -y nodejs
 RUN npm install -g bower;  echo '{ "allow_root": true }' > /root/.bowerrc
 
-RUN pip install Flask Flask-AutoIndex redis gevent gevent-websocket
+RUN pip install Flask https://github.com/sublee/flask-autoindex/archive/e3d449a.zip redis gevent gevent-websocket
 ADD . /code
 WORKDIR /code
 RUN pip install -e .

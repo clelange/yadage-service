@@ -8,11 +8,10 @@ setup(
   author_email = 'lukas.heinrich@cern.ch',
   packages=find_packages(),
   install_requires = [
+    'Authlib',
     'Flask',
     'Flask-AutoIndex',
     'Flask-Login',
-    'oauth2',
-    'Flask-OAuth',
     'Flask-SQLAlchemy',
     'psycopg2',
     'click',
